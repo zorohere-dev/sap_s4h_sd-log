@@ -3,25 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SD Log — SAP SD Consultant Portfolio</title>
+<title>Shaik Zaheer Abbas — SAP Learning Log</title>
 <!--
   ============================================================================
   RUN THIS FROM YOUR OWN GITHUB REPO — NO BUILD STEP, NO BACKEND, NO COST.
 
-  Quick setup:
-    1. Create a new repo on GitHub (Private is fine — see note below).
-    2. Add this file as index.html at the repo root.
-    3. git add index.html && git commit -m "SD log" && git push
-    4. (Optional hosting) Settings > Pages > Deploy from branch > main > / (root)
-       Note: free GitHub accounts can only publish Pages from a PUBLIC repo.
-       If you want this to stay actually private, either:
-         a) keep the repo private and just open index.html locally
-            (double-click it, or use VS Code's "Live Server" extension), or
-         b) upgrade the repo to Pages hosting knowing it'll be public-by-URL.
-    5. Everything you log is saved in THIS BROWSER via localStorage — nothing
-       is sent anywhere. Use the ⇅ backup button regularly to export a .json
-       snapshot; commit it to a /backups folder in the repo for real version
-       history, and use "Restore" to load it on another browser/device.
+  Editing:
+    - Open this file locally (double-click it) or via ?edit=1 on your live
+      URL to see all editing controls (sidebar tree editing, entry add/edit/
+      delete, home page inline editing).
+    - The plain public URL (no ?edit=1) is read-only for visitors — nothing
+      they do there can ever change your real site, since everything saves
+      to localStorage per-browser only.
+    - When ready to make changes public: click the ⇅ icon → Publish →
+      upload the downloaded data.json to your repo root, replacing the old
+      one, and push.
   ============================================================================
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,739 +38,874 @@
     --danger: #FF5C4D;
     --bg: #060607;
     --bg-elevated: #0E0E10;
-    --radius-lg: 28px;
-    --radius-md: 18px;
-    --radius-sm: 12px;
-    --font-display: 'Space Grotesk', -apple-system, 'SF Pro Display', system-ui, sans-serif;
-    --font-body: 'Manrope', -apple-system, 'SF Pro Text', system-ui, sans-serif;
+    --radius-lg: 26px;
+    --radius-md: 16px;
+    --radius-sm: 11px;
+    --font-display: 'Space Grotesk', -apple-system, system-ui, sans-serif;
+    --font-body: 'Manrope', -apple-system, system-ui, sans-serif;
     --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+    --sidebar-w: 268px;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
   body{
-    margin:0;
-    font-family:var(--font-body);
-    color:var(--ink);
-    background: var(--bg);
-    overflow-x:hidden;
+    margin:0; font-family:var(--font-body); color:var(--ink); background:var(--bg);
     -webkit-font-smoothing:antialiased;
   }
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.15); border-radius:8px; }
+  a{ color:inherit; }
+  [contenteditable="true"]{ outline:none; border-radius:6px; transition:background .15s; }
+  [contenteditable="true"]:hover{ background: rgba(255,255,255,0.05); }
+  [contenteditable="true"]:focus{ background: rgba(74,108,247,0.10); box-shadow:0 0 0 1.5px var(--accent); }
+  .glass{ background: var(--glass); backdrop-filter: blur(18px); border:1px solid var(--glass-border); border-radius: var(--radius-md); }
+  .glass-strong{ background: var(--glass-strong); backdrop-filter: blur(22px); border:1px solid var(--glass-border); border-radius: var(--radius-lg); }
 
-  /* ---------------- Liquid background ---------------- */
-  .bg-scene{
-    position:fixed; inset:0; z-index:-1; overflow:hidden;
-    background: linear-gradient(180deg,#060607 0%, #0A0A0C 60%, #0E0E10 100%);
-  }
-  .blob{
-    position:absolute; border-radius:50%;
-    filter: blur(60px);
-    opacity:0.55;
-    mix-blend-mode: normal;
-    animation: drift 26s ease-in-out infinite;
-  }
-  .blob.b1{ width:520px; height:520px; top:-160px; left:-120px;
-    background: radial-gradient(circle at 30% 30%, var(--accent), transparent 70%); animation-duration: 30s;}
-  .blob.b2{ width:460px; height:460px; top:10%; right:-140px;
-    background: radial-gradient(circle at 60% 40%, var(--accent-3), transparent 70%); animation-duration: 24s; animation-delay:-6s;}
-  .blob.b3{ width:420px; height:420px; bottom:-140px; left:12%;
-    background: radial-gradient(circle at 50% 50%, var(--accent-4), transparent 70%); animation-duration: 34s; animation-delay:-12s;}
-  .blob.b4{ width:380px; height:380px; bottom:-80px; right:8%;
-    background: radial-gradient(circle at 40% 60%, var(--accent-2), transparent 70%); animation-duration: 28s; animation-delay:-18s;}
-  @keyframes drift{
-    0%{ transform: translate(0,0) scale(1); }
-    33%{ transform: translate(30px,-25px) scale(1.08); }
-    66%{ transform: translate(-25px,20px) scale(0.96); }
-    100%{ transform: translate(0,0) scale(1); }
-  }
+  /* ---------------- Background ---------------- */
+  .bg-scene{ position:fixed; inset:0; z-index:-1; overflow:hidden; background:#050506; }
+  .blob{ position:absolute; width:60vw; height:60vw; border-radius:50%; filter:blur(90px); opacity:0.14; animation:float linear infinite; }
+  .b1{ background: radial-gradient(circle, var(--accent), transparent 70%); top:-10%; left:-10%; animation-duration:34s; }
+  .b2{ background: radial-gradient(circle, var(--accent-2), transparent 70%); bottom:-15%; right:-10%; animation-duration:40s; }
+  @keyframes float{ 0%{transform:translate(0,0);} 50%{transform:translate(4%,6%);} 100%{transform:translate(0,0);} }
   @media (prefers-reduced-motion: reduce){ .blob{ animation:none; } }
 
-  /* ---------------- Glass utility ---------------- */
-  .glass{
-    background: var(--glass);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+  /* ---------------- App shell ---------------- */
+  .app-shell{ display:flex; min-height:100vh; }
+
+  .sidebar{
+    width:var(--sidebar-w); flex-shrink:0; background:var(--bg-elevated);
+    border-right:1px solid var(--glass-border); height:100vh; position:sticky; top:0;
+    display:flex; flex-direction:column; overflow-y:auto; z-index:40;
   }
-  .glass-strong{
-    background: var(--glass-strong);
-    backdrop-filter: blur(30px) saturate(200%);
-    -webkit-backdrop-filter: blur(30px) saturate(200%);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+  .sidebar-brand{ padding:20px 18px 12px; display:flex; align-items:center; gap:10px; }
+  .sidebar-brand .dot{ width:32px;height:32px;border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex;align-items:center;justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:12px; }
+  .sidebar-brand .who{ font-family:var(--font-display); font-weight:700; font-size:14.5px; line-height:1.25; }
+  .sidebar-brand .sub{ font-size:10.5px; color:var(--ink-faint); }
+  .sidebar-header{ padding:14px 18px 6px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); }
+  .sidebar-scroll{ flex:1; overflow-y:auto; padding-bottom:16px; }
+
+  .sb-row{ display:flex; align-items:center; gap:6px; padding:8px 10px; margin:1px 8px; border-radius:9px; cursor:pointer; font-size:13.5px; color:var(--ink-soft); }
+  .sb-row:hover{ background: rgba(255,255,255,0.05); color:var(--ink); }
+  .sb-row.active{ background: rgba(74,108,247,0.16); color:#fff; }
+  .sb-chev{ width:14px; text-align:center; font-size:10px; color:var(--ink-faint); flex-shrink:0; cursor:pointer; transition:transform .15s; }
+  .sb-chev.open{ transform:rotate(90deg); }
+  .sb-dot-color{ width:8px;height:8px;border-radius:50%; flex-shrink:0; }
+  .sb-label{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sb-label-input{
+    flex:1; min-width:0; background:rgba(255,255,255,0.07); border:1px solid var(--accent);
+    border-radius:6px; padding:2px 6px; font-size:13px; color:var(--ink); font-family:var(--font-body);
+  }
+  .sb-actions{ display:none; gap:2px; flex-shrink:0; }
+  .sb-row:hover .sb-actions{ display:flex; }
+  .sb-mini-btn{ width:20px;height:20px; border-radius:5px; border:none; background:transparent; color:var(--ink-faint); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .sb-mini-btn:hover{ background:rgba(255,255,255,0.1); color:var(--ink); }
+  .sb-mini-btn.danger:hover{ background:rgba(255,92,77,0.18); color:var(--danger); }
+  .sb-children{ overflow:hidden; }
+  .sb-add-root{ margin:10px 18px 6px; font-size:12px; padding:8px 10px; }
+
+  .sidebar-toggle{ display:none; }
+  .sidebar-backdrop{ display:none; }
+
+  @media (max-width: 860px){
+    .sidebar{ position:fixed; left:0; top:0; height:100vh; transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 40px rgba(0,0,0,0.5); }
+    .sidebar.open{ transform:translateX(0); }
+    .sidebar-toggle{ display:flex; }
+    .sidebar-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:35; }
+    .sidebar-backdrop.show{ display:block; }
   }
 
-  /* ---------------- Top island nav ---------------- */
-  .island-wrap{
-    position:sticky; top:14px; z-index:40;
-    display:flex; justify-content:center;
-    padding: 0 16px;
-  }
-  .island{
-    border-radius: 999px;
-    padding: 8px 10px;
-    display:flex; align-items:center; gap:6px;
-    max-width: 980px; width:100%;
-    transition: padding .25s ease, transform .25s ease;
-  }
-  .island.shrunk{ padding:5px 8px; transform: scale(0.97); }
-  .brand-pill{
-    display:flex; align-items:center; gap:8px;
-    padding: 6px 12px 6px 6px;
-    border-radius: 999px;
-    flex:none;
-  }
-  .brand-dot{
-    width:30px; height:30px; border-radius:50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    display:flex; align-items:center; justify-content:center;
-    color:#fff; font-weight:700; font-size:13px; font-family:var(--font-mono);
-    flex:none;
-  }
-  .brand-text{ line-height:1.15; }
-  .brand-text .name{ font-weight:700; font-size:13.5px; }
-  .brand-text .role{ font-size:10.5px; color:var(--ink-soft); }
-  .island-tabs{
-    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; flex:1;
-  }
-  .island-tabs::-webkit-scrollbar{ display:none; }
-  .tab-btn{
-    flex:none;
-    font-family:var(--font-body);
-    font-size:12.5px; font-weight:600;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border:none; cursor:pointer;
-    background: transparent;
-    color: var(--ink-soft);
-    white-space:nowrap;
-    transition: background .2s, color .2s;
-  }
-  .tab-btn:hover{ background: rgba(255,255,255,0.08); }
-  .tab-btn.active{
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color:#fff;
-    box-shadow: 0 4px 14px rgba(74,108,247,0.35);
+  .main-area{ flex:1; min-width:0; display:flex; flex-direction:column; }
+  .topbar{
+    position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px;
+    padding:12px 20px; background:rgba(6,6,7,0.75); backdrop-filter:blur(16px); border-bottom:1px solid var(--glass-border);
   }
   .icon-btn{
-    flex:none;
-    width:36px; height:36px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    border:none; cursor:pointer; background: rgba(255,255,255,0.07);
-    color:var(--ink-soft); font-size:15px;
+    width:36px;height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer; background: rgba(255,255,255,0.07); color:var(--ink-soft); font-size:15px; flex-shrink:0;
   }
   .icon-btn:hover{ background: rgba(255,255,255,0.14); color:var(--ink); }
-
-  /* ---------------- Layout ---------------- */
-  .wrap{ max-width: 980px; margin: 0 auto; padding: 22px 16px 140px; }
-
-  .hero-card{
-    border-radius: var(--radius-lg);
-    padding: 30px 30px 26px;
-    margin-bottom: 22px;
-    position:relative; overflow:hidden;
-  }
-  .hero-eyebrow{
-    font-family: var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-    color: var(--accent); display:flex; align-items:center; gap:7px; font-weight:700;
-  }
-  .hero-eyebrow::before{ content:""; width:7px;height:7px;border-radius:50%; background: var(--accent-4); }
-  .hero-title{
-    font-family: var(--font-display); font-weight:700; font-size: clamp(24px,4vw,32px);
-    margin: 8px 0 6px; letter-spacing:-0.01em;
-  }
-  .hero-sub{ color:var(--ink-soft); font-size:14px; max-width:560px; margin:0 0 20px; }
-
-  .stat-row{ display:flex; gap:12px; flex-wrap:wrap; }
-  .stat-chip{
-    border-radius: var(--radius-sm);
-    padding: 12px 16px;
-    min-width:110px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.10);
-  }
-  .stat-chip .num{ font-family:var(--font-display); font-weight:700; font-size:22px; }
-  .stat-chip .lbl{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
-
-  .search-row{ display:flex; gap:10px; margin-bottom:18px; }
   .search-input{
-    flex:1; border-radius: 999px; border:1px solid rgba(255,255,255,0.12);
-    padding: 12px 18px; font-size:13.5px; font-family:var(--font-body);
-    background: rgba(255,255,255,0.06); backdrop-filter: blur(16px);
-    color: var(--ink);
+    flex:1; border-radius:10px; border:1px solid var(--glass-border);
+    padding:9px 13px; font-size:13.5px; font-family:var(--font-body);
+    background: rgba(255,255,255,0.05); color:var(--ink);
   }
-  .search-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
-  .search-input::placeholder{ color: var(--ink-faint); }
+  .search-input:focus{ outline:none; border-color:var(--accent); }
+  .search-input::placeholder{ color:var(--ink-faint); }
 
-  .section-title{
-    font-family: var(--font-display); font-weight:700; font-size:17px;
-    margin: 26px 0 12px; display:flex; align-items:center; gap:10px;
-  }
-  .section-title .count{
-    font-family: var(--font-mono); font-size:11px; color:var(--ink-soft);
-    background: rgba(255,255,255,0.08); padding:2px 9px; border-radius:999px;
-  }
+  .content-wrap{ max-width:900px; width:100%; margin:0 auto; padding:24px 20px 140px; flex:1; }
 
-  /* ---------------- Entry cards ---------------- */
-  .entry-card{
-    border-radius: var(--radius-md);
-    padding: 20px 22px;
-    margin-bottom: 14px;
-    cursor:pointer;
-    transition: transform .18s ease, box-shadow .18s ease;
+  /* ---------------- Breadcrumb + scrollable sibling chips ---------------- */
+  .crumb{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-bottom:10px; }
+  .crumb span{ cursor:pointer; }
+  .crumb span:hover{ color:var(--ink); }
+  .chip-scroll{ display:flex; gap:8px; overflow-x:auto; padding:2px 2px 12px; scrollbar-width:thin; }
+  .chip-scroll::-webkit-scrollbar{ height:6px; }
+  .sib-chip{
+    flex-shrink:0; padding:7px 14px; border-radius:999px; font-size:12.5px; font-weight:600;
+    background: rgba(255,255,255,0.06); border:1px solid var(--glass-border); color:var(--ink-soft); cursor:pointer; white-space:nowrap;
   }
-  .entry-card:hover{ transform: translateY(-2px); }
-  .entry-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
-  .entry-phase-tag{
-    font-family: var(--font-mono); font-size:10.5px; font-weight:700; letter-spacing:.04em;
-    padding: 4px 10px; border-radius:999px; color:#fff; display:inline-block; margin-bottom:8px;
-  }
-  .entry-title{ font-family: var(--font-display); font-weight:700; font-size:17px; margin:0 0 4px; }
-  .entry-date{ font-family: var(--font-mono); font-size:11px; color: var(--ink-faint); }
-  .entry-req-preview{ font-size:13px; color: var(--ink-soft); margin-top:8px; line-height:1.5; }
+  .sib-chip.active{ background: var(--accent); color:#fff; border-color:transparent; }
+
+  .section-title{ font-family:var(--font-display); font-weight:700; font-size:16px; margin:26px 0 12px; display:flex; align-items:center; gap:8px; }
+  .section-title .count{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); background:rgba(255,255,255,0.06); padding:2px 9px; border-radius:999px; }
+
+  /* ---------------- Entry cards (inline expand) ---------------- */
+  .entry-card{ margin-bottom:12px; padding:16px; cursor:pointer; }
+  .entry-top{ display:flex; align-items:flex-start; gap:10px; }
+  .entry-tag{ display:inline-block; font-family:var(--font-mono); font-size:10px; font-weight:700; letter-spacing:.03em; padding:3px 9px; border-radius:999px; color:#fff; margin-bottom:6px; }
+  .entry-title{ font-family:var(--font-display); font-weight:700; font-size:16px; margin:0 0 4px; }
+  .entry-date{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
+  .entry-req-preview{ font-size:13px; color:var(--ink-soft); margin-top:8px; line-height:1.5; }
+  .chev{ color:var(--ink-faint); font-size:18px; transition:transform .2s; flex-shrink:0; margin-top:2px; }
+  .entry-card.expanded .chev{ transform:rotate(90deg); }
   .entry-thumbs{ display:flex; gap:6px; margin-top:12px; }
-  .entry-thumb{ width:46px; height:46px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); }
-  .entry-thumb-more{
-    width:46px; height:46px; border-radius:9px; display:flex; align-items:center; justify-content:center;
-    background: rgba(255,255,255,0.08); font-size:11px; font-weight:700; color:var(--ink-soft);
-  }
-  .chev-open{ color:var(--ink-faint); font-size:20px; }
+  .entry-thumb{ width:44px;height:44px; border-radius:8px; object-fit:cover; border:1px solid var(--glass-border); }
+  .entry-thumb-more{ width:44px;height:44px; border-radius:8px; background:rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--ink-soft); }
 
-  .empty-state{
-    text-align:center; padding: 50px 20px; color: var(--ink-faint);
-  }
-  .empty-state .big{ font-size:40px; margin-bottom:10px; }
-  .empty-state p{ font-size:13.5px; max-width:360px; margin: 6px auto 0; }
+  .entry-detail{ max-height:0; overflow:hidden; transition:max-height .25s ease; }
+  .entry-card.expanded .entry-detail{ max-height:4000px; }
+  .entry-detail-inner{ padding-top:16px; margin-top:14px; border-top:1px solid var(--glass-border); }
+  .detail-sub{ margin-bottom:16px; }
+  .detail-label{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; margin-bottom:5px; display:flex; align-items:center; gap:6px; }
+  .dash{ width:12px; height:2px; border-radius:2px; }
+  .detail-text{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); white-space:pre-wrap; }
+  .detail-gallery{ display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:8px; }
+  .detail-gallery img{ width:100%; height:90px; object-fit:cover; border-radius:10px; cursor:zoom-in; border:1px solid var(--glass-border); }
+  .entry-detail-actions{ display:flex; gap:10px; margin-top:6px; }
 
-  /* ---------------- FAB ---------------- */
+  .btn{ padding:10px 16px; border-radius:12px; border:none; cursor:pointer; font-family:var(--font-body); font-weight:600; font-size:13.5px; }
+  .btn-primary{ background: linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; }
+  .btn-ghost{ background: rgba(255,255,255,0.08); color:var(--ink-soft); }
+  .btn-danger-ghost{ background: rgba(255,92,77,0.12); color:var(--danger); }
+  .btn-sm{ padding:6px 12px; font-size:12px; border-radius:9px; }
+
+  .empty-state{ text-align:center; padding:60px 20px; color:var(--ink-faint); }
+  .empty-state .big{ font-size:34px; margin-bottom:10px; }
+  .empty-state p{ font-size:13.5px; max-width:380px; margin:6px auto 0; }
+
   .fab{
-    position:fixed; right:22px; bottom:26px; z-index:50;
-    width:60px; height:60px; border-radius:50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color:#fff; border:none; cursor:pointer;
-    font-size:26px; display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 10px 30px rgba(74,108,247,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
-    transition: transform .18s ease;
+    position:fixed; right:24px; bottom:24px; width:56px;height:56px; border-radius:50%;
+    background: linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff; font-size:26px; border:none;
+    box-shadow:0 10px 30px rgba(74,108,247,0.45); cursor:pointer; z-index:30;
   }
-  .fab:hover{ transform: scale(1.06) rotate(90deg); }
 
-  /* ---------------- Modal ---------------- */
-  .modal-overlay{
-    position:fixed; inset:0; background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(6px);
-    z-index:100; display:flex; align-items:flex-end; justify-content:center;
-    animation: fadeIn .2s ease;
-  }
+  /* ---------------- Home / resume page ---------------- */
+  .hero-name{ font-family:var(--font-display); font-weight:700; font-size:clamp(26px,4.5vw,38px); margin:0; }
+  .hero-headline{ font-size:15px; color:var(--accent-2); font-weight:600; margin:6px 0 14px; }
+  .hero-about{ font-size:14px; line-height:1.7; color:var(--ink-soft); max-width:680px; }
+  .edit-hint{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-top:14px; }
+
+  .timeline{ margin-top:8px; }
+  .tl-item{ position:relative; padding-left:22px; padding-bottom:22px; border-left:2px solid var(--glass-border); }
+  .tl-item:last-child{ border-color:transparent; padding-bottom:4px; }
+  .tl-item::before{ content:""; position:absolute; left:-6px; top:2px; width:10px;height:10px; border-radius:50%; background:var(--accent); }
+  .tl-role{ font-weight:700; font-size:14.5px; }
+  .tl-company{ font-size:13px; color:var(--accent-2); margin-top:2px; }
+  .tl-period{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-top:2px; }
+  .tl-desc{ font-size:13px; color:var(--ink-soft); margin-top:8px; line-height:1.6; }
+  .tl-remove{ margin-top:8px; }
+
+  .chip-cloud{ display:flex; flex-wrap:wrap; gap:8px; }
+  .cloud-chip{ padding:7px 13px; border-radius:999px; background:rgba(255,255,255,0.06); border:1px solid var(--glass-border); font-size:12.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; }
+  .cloud-chip .x{ cursor:pointer; color:var(--ink-faint); font-size:11px; }
+  .cloud-chip .x:hover{ color:var(--danger); }
+  .add-chip-input{ padding:7px 13px; border-radius:999px; border:1px dashed var(--glass-border); background:transparent; color:var(--ink); font-size:12.5px; width:150px; }
+
+  /* ---------------- Modal / toast ---------------- */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:flex-end; justify-content:center; }
   @media (min-width:700px){ .modal-overlay{ align-items:center; } }
-  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
-  .modal{
-    width:100%; max-width: 640px; max-height: 92vh; overflow-y:auto;
-    border-radius: 26px 26px 0 0;
-    padding: 26px 24px 100px;
-    animation: slideUp .25s cubic-bezier(.2,.9,.3,1.2);
+  .modal{ width:100%; max-width:640px; max-height:92vh; overflow-y:auto; padding:22px; border-radius:24px 24px 0 0; }
+  @media (min-width:700px){ .modal{ border-radius:22px; margin-bottom:26px; } }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .modal-head h2{ font-family:var(--font-display); font-size:19px; margin:0; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:700; margin-bottom:6px; }
+  .field input, .field textarea, .field select{
+    width:100%; padding:10px 13px; border-radius:12px; border:1px solid var(--glass-border);
+    background: rgba(255,255,255,0.05); font-family:var(--font-body); font-size:13.5px; color:var(--ink);
   }
-  @media (min-width:700px){ .modal{ border-radius: 26px; padding-bottom:26px; margin-bottom:26px;} }
-  @keyframes slideUp{ from{ transform: translateY(40px); opacity:0;} to{ transform:translateY(0); opacity:1; } }
-
-  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
-  .modal-head h2{ font-family: var(--font-display); font-size:20px; margin:0; }
-
-  .field{ margin-bottom:16px; }
-  .field label{
-    display:block; font-family: var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
-    color: var(--ink-soft); font-weight:700; margin-bottom:6px;
-  }
-  .field input[type="text"], .field input[type="date"], .field textarea, .field select{
-    width:100%; padding: 11px 14px; border-radius: 13px; border:1px solid rgba(255,255,255,0.10);
-    background: rgba(255,255,255,0.05); font-family: var(--font-body); font-size:13.5px; color: var(--ink);
-    resize: vertical;
-  }
-  .field textarea{ min-height:70px; line-height:1.5; }
-  .field input:focus, .field textarea:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:0; }
-  .field-hint{ font-size:11px; color:var(--ink-faint); margin-top:4px; }
-
-  .phase-picker{ display:flex; flex-wrap:wrap; gap:8px; }
-  .phase-chip-opt{
-    padding:8px 13px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;
-    border: 1.5px solid transparent; color:#fff;
-  }
-  .phase-chip-opt.selected{ box-shadow: 0 0 0 2.5px rgba(255,255,255,0.35) inset; }
-
-  .upload-zone{
-    border: 1.6px dashed rgba(255,255,255,0.18); border-radius: 16px;
-    padding: 18px; text-align:center; cursor:pointer;
-    background: rgba(255,255,255,0.03);
-  }
-  .upload-zone:hover{ background: rgba(255,255,255,0.07); }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--accent); }
+  .field textarea{ min-height:80px; resize:vertical; }
+  .modal-actions{ display:flex; gap:10px; margin-top:6px; }
+  .upload-zone{ border:1.5px dashed var(--glass-border); border-radius:14px; padding:18px; text-align:center; cursor:pointer; background:rgba(255,255,255,0.03); }
+  .upload-zone:hover{ background:rgba(255,255,255,0.06); }
   .upload-zone input{ display:none; }
-  .img-preview-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-  .img-preview{ position:relative; width:64px; height:64px; }
-  .img-preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,0.10); }
-  .img-preview .rm{
-    position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
-    background: var(--danger); color:#fff; border:none; font-size:11px; cursor:pointer; line-height:1;
-  }
+  .img-preview-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .img-preview{ position:relative; width:64px;height:64px; }
+  .img-preview img{ width:100%;height:100%; object-fit:cover; border-radius:9px; border:1px solid var(--glass-border); }
+  .img-preview .rm{ position:absolute; top:-6px; right:-6px; width:18px;height:18px; border-radius:50%; background:var(--danger); color:#fff; border:none; font-size:11px; cursor:pointer; }
 
-  .modal-actions{ display:flex; gap:10px; margin-top:22px; }
-  .btn{
-    font-family: var(--font-body); font-weight:600; font-size:13.5px;
-    padding: 12px 20px; border-radius: 999px; border:none; cursor:pointer;
-  }
-  .btn-primary{ background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; flex:1; }
-  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
-  .btn-ghost{ background: rgba(255,255,255,0.08); color: var(--ink-soft); }
-  .btn-danger-ghost{ background: rgba(224,86,63,0.1); color: var(--danger); }
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:300; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .lightbox img{ max-width:100%; max-height:100%; border-radius:12px; }
+  .lightbox-close{ position:absolute; top:18px; right:18px; width:38px;height:38px; border-radius:50%; background:rgba(255,255,255,0.12); color:#fff; border:none; font-size:17px; cursor:pointer; }
 
-  /* ---------------- Detail viewer ---------------- */
-  .detail-sub{ margin-bottom:18px; }
-  .detail-label{
-    font-family: var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em;
-    font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:7px;
-  }
-  .detail-label .dash{ width:16px; height:2px; display:inline-block; }
-  .detail-text{ font-size:14px; line-height:1.6; color:var(--ink); white-space:pre-wrap; }
-  .detail-gallery{ display:grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap:8px; }
-  .detail-gallery img{ width:100%; height:100px; object-fit:cover; border-radius:12px; cursor:zoom-in; border:1px solid rgba(255,255,255,0.10); }
+  .toast{ position:fixed; bottom:100px; left:50%; transform:translateX(-50%); padding:10px 18px; border-radius:999px; color:#fff; background:rgba(20,20,24,0.95); font-size:12.5px; z-index:400; border:1px solid var(--glass-border); }
 
-  .lightbox{
-    position:fixed; inset:0; background:rgba(10,12,20,0.85); z-index:200;
-    display:flex; align-items:center; justify-content:center; padding:20px;
-  }
-  .lightbox img{ max-width:100%; max-height:100%; border-radius:14px; }
-  .lightbox-close{
-    position:absolute; top:20px; right:20px; width:40px; height:40px; border-radius:50%;
-    background: rgba(255,255,255,0.15); color:#fff; border:none; font-size:18px; cursor:pointer;
-  }
-
-  .toast{
-    position:fixed; bottom:100px; left:50%; transform: translateX(-50%);
-    padding: 11px 20px; border-radius:999px; font-size:13px; font-weight:600;
-    color:#fff; background: rgba(30,34,48,0.92); z-index:300;
-    animation: toastIn .25s ease;
-  }
-  @keyframes toastIn{ from{opacity:0; transform:translate(-50%,10px);} to{opacity:1; transform:translate(-50%,0);} }
-
-  .loading-veil{
-    position:fixed; inset:0; background:#060607; z-index:500;
-    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px;
-  }
-  .spinner{
-    width:34px; height:34px; border-radius:50%;
-    border: 3px solid rgba(74,108,247,0.2); border-top-color: var(--accent);
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin{ to{ transform: rotate(360deg);} }
-
-  ::-webkit-scrollbar{ width:8px; }
-  ::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.15); border-radius:8px; }
+  .loading-veil{ position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+  .spinner{ width:26px;height:26px; border:3px solid rgba(255,255,255,0.15); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<div class="bg-scene">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-  <div class="blob b4"></div>
-</div>
-
+<div class="bg-scene"><div class="blob b1"></div><div class="blob b2"></div></div>
 <div id="loadingVeil" class="loading-veil">
   <div class="spinner"></div>
-  <div style="font-family:var(--font-mono); font-size:12px; color:#5B6472;">loading your workspace…</div>
+  <div style="font-family:var(--font-mono); font-size:12px; color:#9A9DA6;">loading your workspace…</div>
 </div>
 
-<div class="island-wrap">
-  <nav class="island glass-strong" id="island">
-    <div class="brand-pill">
-      <div class="brand-dot">SD</div>
-      <div class="brand-text">
-        <div class="name" id="brandName">SD Log</div>
-        <div class="role">SAP SD Consultant Portfolio</div>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="dot" id="sbInitials">SZ</div>
+      <div>
+        <div class="who" id="sbName">Shaik Zaheer Abbas</div>
+        <div class="sub">SAP Learning Log</div>
       </div>
     </div>
-    <div class="island-tabs" id="islandTabs"></div>
-    <button class="icon-btn" id="backupBtn" title="Backup / restore">⇅</button>
-    <button class="icon-btn" id="editProfileBtn" title="Edit profile">✎</button>
-  </nav>
+    <div class="sb-row" id="homeRow" data-view="home" style="margin:4px 8px;">
+      <span style="width:14px;"></span><span class="sb-label">🏠 Home</span>
+    </div>
+    <div class="sidebar-header">SAP Modules</div>
+    <div class="sidebar-scroll">
+      <div id="moduleTree"></div>
+      <button class="btn btn-ghost sb-add-root" id="addModuleBtn">+ Add module</button>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <div class="topbar">
+      <button class="icon-btn sidebar-toggle" id="sidebarToggle">☰</button>
+      <input class="search-input" id="searchInput" placeholder="Search entries, tcodes, keywords…" style="display:none;">
+      <div style="flex:1;" id="topbarSpacer"></div>
+      <button class="icon-btn" id="backupBtn" title="Backup / restore / publish">⇅</button>
+    </div>
+    <div class="content-wrap" id="contentWrap"></div>
+  </div>
 </div>
 
-<div class="wrap">
-
-  <div class="hero-card glass">
-    <div class="hero-eyebrow" id="storageEyebrow">Stored in this browser only · export backups often</div>
-    <h1 class="hero-title" id="heroTitle">Your day-to-day SAP SD build log</h1>
-    <p class="hero-sub" id="heroSub">Every entry you add here — requirement, config, screenshots, tests, lessons, fixes — becomes something you can walk an interviewer through.</p>
-    <div class="stat-row" id="statRow"></div>
-  </div>
-
-  <div class="search-row">
-    <input class="search-input glass" id="searchInput" placeholder="Search entries, tcodes, keywords…">
-  </div>
-
-  <div id="feedContainer"></div>
-</div>
-
-<button class="fab" id="fabAdd" title="Add today's entry">+</button>
+<button class="fab" id="fabAdd" title="Add entry" style="display:none;">+</button>
 
 <script>
 /* ==========================================================================
-   CONFIG / DEFAULT DATA
-   ========================================================================== */
-const DEFAULT_PHASES = [
-  {id:"p1", name:"Enterprise Structure", color:"#4A6CF7"},
-  {id:"p2", name:"Master Data",          color:"#A25BF0"},
-  {id:"p3", name:"Sales Process",        color:"#FF6FA5"},
-  {id:"p4", name:"Pricing",              color:"#E0A62A"},
-  {id:"p5", name:"Delivery & Billing",   color:"#22C1A0"},
-  {id:"p6", name:"Advanced Topics",      color:"#3E7A9E"},
-  {id:"p7", name:"Consultant Deliverables", color:"#7A6FF0"}
-];
-
-let PHASES = [];
-let ENTRIES = [];
-let currentFilterPhase = "all";
-let searchQuery = "";
-let editingEntryId = null;
-let pendingImages = []; // base64 strings for the open form
-
-/* ==========================================================================
-   STORAGE HELPERS — plain browser localStorage (works on GitHub Pages,
-   Netlify, Vercel, or even opened straight from disk — no backend, no
-   account, nothing to pay for). Everything lives under the "sdlog:" prefix
-   so it never collides with anything else on the same origin.
+   STORAGE HELPERS — plain browser localStorage, no backend, no account.
    ========================================================================== */
 const NS = "sdlog:";
-
-async function safeGet(key){
-  try{
-    return localStorage.getItem(NS + key); // raw string or null
-  }catch(e){ return null; }
-}
+async function safeGet(key){ try{ return localStorage.getItem(NS+key); }catch(e){ return null; } }
 async function safeSet(key, value){
-  try{
-    localStorage.setItem(NS + key, value);
-    return true;
-  }catch(e){
-    console.error("storage set failed", key, e);
-    if(e && e.name === "QuotaExceededError"){
-      toast("Storage is full — export a backup, then remove/shrink some screenshots.");
-    }
-    return false;
-  }
+  try{ localStorage.setItem(NS+key, value); return true; }
+  catch(e){ if(e && e.name==="QuotaExceededError") toast("Storage full — export a backup, then remove/shrink screenshots."); return false; }
 }
-async function safeDelete(key){
-  try{ localStorage.removeItem(NS + key); return true; }
-  catch(e){ return false; }
-}
+async function safeDelete(key){ try{ localStorage.removeItem(NS+key); return true; }catch(e){ return false; } }
 async function safeList(prefix){
   try{
     const keys = [];
-    for(let i=0;i<localStorage.length;i++){
-      const full = localStorage.key(i);
-      if(full && full.startsWith(NS + prefix)) keys.push(full.slice(NS.length));
-    }
+    for(let i=0;i<localStorage.length;i++){ const full = localStorage.key(i); if(full && full.startsWith(NS+prefix)) keys.push(full.slice(NS.length)); }
     return keys;
   }catch(e){ return []; }
 }
-
 function estimateStorageBytes(){
-  let total = 0;
-  for(let i=0;i<localStorage.length;i++){
-    const k = localStorage.key(i);
-    if(k && k.startsWith(NS)) total += (k.length + (localStorage.getItem(k)||"").length);
-  }
+  let total=0;
+  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.startsWith(NS)) total += (k.length + (localStorage.getItem(k)||"").length); }
   return total;
 }
 
+/* ==========================================================================
+   DATA MODEL
+   MODULES: [{id,name}]  — top-level sidebar sections, e.g. "SAP SD"
+   TOPICS:  [{id, moduleId, parentId(null|topicId), name, color}] — nested tree
+   ENTRIES: [{id, topicId, title, date, tcodes, businessReq, config, images,
+              testEvidence, lessons, errors, createdAt}]
+   HOME:    resume-style intro content
+   ========================================================================== */
+let MODULES = [];
+let TOPICS = [];
+let ENTRIES = [];
+let HOME = {};
+let selection = {type:"home"};
+let expandedEntryId = null;
+let editingEntryId = null;
+let pendingImages = [];
+let searchQuery = "";
+const openNodes = new Set(); // sidebar expand/collapse state, holds "module:id" / "topic:id"
+
+const PALETTE = ["#4A6CF7","#A25BF0","#FF6FA5","#E0A62A","#22C1A0","#3E7A9E","#7A6FF0","#E0563F"];
+
+const DEFAULT_HOME = {
+  name: "Shaik Zaheer Abbas",
+  headline: "SAP SD Functional Consultant",
+  about: "SAP SD Functional Consultant with around 1.5 years of hands-on experience on a live production support project (Cutera Inc., US), running RISE with SAP S/4HANA 2020 and 2023. Currently deepening expertise toward a senior functional consultant level across SD, MM, FI, and cross-module integration areas, and preparing for the SAP SD certification exam C_TS462_2023.",
+  experience: [
+    {role:"SAP SD Functional Consultant", company:"Cutera Inc. — Production Support (RISE with SAP S/4HANA)", period:"~1.5 years", description:"Order-to-cash support, pricing procedure configuration, billing, credit management, shipping & ATP, and SD-FI / SD-MM cross-module integration on a live S/4HANA 2020 & 2023 landscape."}
+  ],
+  skills: ["SAP SD","Pricing Procedures","Credit Management","Shipping & ATP","SD-FI Integration","SD-MM Integration","Fiori Apps","IDoc Monitoring","LSMW / LTMC"],
+  certifications: ["Preparing for C_TS462_2023 — SAP S/4HANA Sales"],
+  interests: ["Audio gear & IEMs","Technical writing & LinkedIn knowledge-sharing"]
+};
+
+/* ==========================================================================
+   EDIT MODE — controls only appear locally, on localhost, or with ?edit=1.
+   The public GitHub Pages URL is clean and read-only for every visitor.
+   ========================================================================== */
+const EDIT_MODE = (
+  location.protocol === "file:" ||
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1" ||
+  new URLSearchParams(location.search).get("edit") === "1"
+);
+
+/* ==========================================================================
+   LOAD + MIGRATION (from the old flat "Phases" model, if present)
+   ========================================================================== */
 async function tryLoadPublishedData(){
-  // Looks for a data.json sitting next to index.html in the repo. This is the
-  // file the "Publish" button below produces. If it exists, it's the public,
-  // visitor-facing content for this site.
-  try{
-    const res = await fetch("./data.json", {cache:"no-store"});
-    if(!res.ok) return null;
-    return await res.json();
-  }catch(e){ return null; }
+  try{ const res = await fetch("./data.json", {cache:"no-store"}); if(!res.ok) return null; return await res.json(); }
+  catch(e){ return null; }
 }
 
 async function loadAll(){
-  const keys = await safeList("entry:");
-  const hasLocalEntries = keys.length > 0;
+  const hasNewData = await safeGet("sd-modules");
+  const entryKeysExisting = await safeList("entry:");
 
-  // If THIS browser has never been used to author entries yet, prefer the
-  // published data.json (if the repo has one) so the site shows real content
-  // instead of an empty state — this covers every visitor, and also your own
-  // first visit to a fresh clone/browser.
-  if(!hasLocalEntries){
+  if(!hasNewData && entryKeysExisting.length===0){
     const published = await tryLoadPublishedData();
     if(published){
-      if(published.profile) await safeSet("sd-profile", JSON.stringify(published.profile));
-      if(published.phases) await safeSet("sd-phases", JSON.stringify(published.phases));
+      if(published.home) await safeSet("sd-home", JSON.stringify(published.home));
+      if(published.modules) await safeSet("sd-modules", JSON.stringify(published.modules));
+      if(published.topics) await safeSet("sd-topics", JSON.stringify(published.topics));
       if(Array.isArray(published.entries)){
-        for(const entry of published.entries) await safeSet("entry:" + entry.id, JSON.stringify(entry));
+        for(const entry of published.entries) await safeSet("entry:"+entry.id, JSON.stringify(entry));
       }
     }
   }
 
-  const profileRaw = await safeGet("sd-profile");
-  const profile = profileRaw ? JSON.parse(profileRaw) : {name:"Your Name", title:"SAP SD Consultant Portfolio", tagline:"Every entry you add here — requirement, config, screenshots, tests, lessons, fixes — becomes something you can walk an interviewer through."};
-  applyProfile(profile);
-
-  const phasesRaw = await safeGet("sd-phases");
-  PHASES = phasesRaw ? JSON.parse(phasesRaw) : DEFAULT_PHASES.slice();
-  if(!phasesRaw) await safeSet("sd-phases", JSON.stringify(PHASES));
-
-  const finalKeys = await safeList("entry:");
-  const loaded = [];
-  for(const k of finalKeys){
-    const raw = await safeGet(k);
-    if(raw){ try{ loaded.push(JSON.parse(raw)); }catch(e){} }
+  // Migrate legacy sd-phases (flat "Phases") into a "SAP SD" module + topics
+  const legacyPhasesRaw = await safeGet("sd-phases");
+  const modulesRaw = await safeGet("sd-modules");
+  if(legacyPhasesRaw && !modulesRaw){
+    const legacyPhases = JSON.parse(legacyPhasesRaw);
+    const sapsd = {id:"sapsd", name:"SAP SD"};
+    MODULES = [sapsd];
+    TOPICS = legacyPhases.map(p => ({id:p.id, moduleId:"sapsd", parentId:null, name:p.name, color:p.color||"#4A6CF7"}));
+    await safeSet("sd-modules", JSON.stringify(MODULES));
+    await safeSet("sd-topics", JSON.stringify(TOPICS));
+    const keys = await safeList("entry:");
+    for(const k of keys){
+      const raw = await safeGet(k);
+      if(!raw) continue;
+      const entry = JSON.parse(raw);
+      if(entry.phaseId && !entry.topicId){ entry.topicId = entry.phaseId; delete entry.phaseId; await safeSet(k, JSON.stringify(entry)); }
+    }
+    await safeDelete("sd-phases");
   }
+
+  const homeRaw = await safeGet("sd-home");
+  HOME = homeRaw ? JSON.parse(homeRaw) : JSON.parse(JSON.stringify(DEFAULT_HOME));
+  if(!homeRaw) await safeSet("sd-home", JSON.stringify(HOME));
+
+  const modRaw = await safeGet("sd-modules");
+  if(modRaw){
+    MODULES = JSON.parse(modRaw);
+  } else if(MODULES.length===0){
+    MODULES = [{id:"sapsd", name:"SAP SD"}];
+    await safeSet("sd-modules", JSON.stringify(MODULES));
+  }
+
+  const topRaw = await safeGet("sd-topics");
+  if(topRaw){ TOPICS = JSON.parse(topRaw); }
+
+  const keys = await safeList("entry:");
+  const loaded = [];
+  for(const k of keys){ const raw = await safeGet(k); if(raw){ try{ loaded.push(JSON.parse(raw)); }catch(e){} } }
   loaded.sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
   ENTRIES = loaded;
+
+  // default open the first module
+  if(MODULES[0]) openNodes.add("module:"+MODULES[0].id);
 }
 
-function applyProfile(p){
-  document.getElementById("brandName").textContent = p.name || "SD Log";
-  document.getElementById("heroTitle").textContent = p.title || "Your day-to-day SAP SD build log";
-  document.getElementById("heroSub").textContent = p.tagline || "";
-  window.__profile = p;
-}
-
-/* ==========================================================================
-   RENDER: island tabs
-   ========================================================================== */
-function renderTabs(){
-  const tabs = document.getElementById("islandTabs");
-  const allBtn = `<button class="tab-btn ${currentFilterPhase==='all'?'active':''}" data-phase="all">All</button>`;
-  const phaseBtns = PHASES.map(p => `<button class="tab-btn ${currentFilterPhase===p.id?'active':''}" data-phase="${p.id}" style="${currentFilterPhase===p.id?`background:${p.color};box-shadow:0 4px 14px ${p.color}55;`:''}">${escapeHtml(p.name)}</button>`).join("");
-  tabs.innerHTML = allBtn + phaseBtns;
-  tabs.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => {
-    currentFilterPhase = b.dataset.phase;
-    renderTabs();
-    renderFeed();
-  }));
+async function persistModulesTopics(){
+  await safeSet("sd-modules", JSON.stringify(MODULES));
+  await safeSet("sd-topics", JSON.stringify(TOPICS));
 }
 
 /* ==========================================================================
-   RENDER: stats
+   TREE HELPERS
    ========================================================================== */
-function renderStats(){
-  const total = ENTRIES.length;
-  const uniqueDates = new Set(ENTRIES.map(e => e.date)).size;
-  const phasesTouched = new Set(ENTRIES.map(e => e.phaseId)).size;
-  const withErrors = ENTRIES.filter(e => (e.errors||"").trim().length>0).length;
-  const stats = [
-    {num: total, lbl:"Entries logged"},
-    {num: uniqueDates, lbl:"Days documented"},
-    {num: `${phasesTouched}/${PHASES.length}`, lbl:"Phases started"},
-    {num: withErrors, lbl:"Debugged issues"}
-  ];
-  document.getElementById("statRow").innerHTML = stats.map(s => `
-    <div class="stat-chip glass"><div class="num">${s.num}</div><div class="lbl">${s.lbl}</div></div>
-  `).join("");
+function topicChildren(moduleId, parentId){
+  return TOPICS.filter(t => t.moduleId===moduleId && (t.parentId||null)===(parentId||null));
+}
+function topicById(id){ return TOPICS.find(t => t.id===id); }
+function moduleById(id){ return MODULES.find(m => m.id===id); }
+function descendantTopicIds(topicId){
+  const ids = [topicId];
+  const kids = TOPICS.filter(t => t.parentId===topicId);
+  kids.forEach(k => ids.push(...descendantTopicIds(k.id)));
+  return ids;
+}
+function moduleTopicIds(moduleId){ return TOPICS.filter(t => t.moduleId===moduleId).map(t => t.id); }
+function topicPath(topicId){
+  const path = [];
+  let t = topicById(topicId);
+  while(t){ path.unshift(t); t = t.parentId ? topicById(t.parentId) : null; }
+  return path;
 }
 
 /* ==========================================================================
-   RENDER: feed
+   SIDEBAR RENDER
    ========================================================================== */
-function phaseById(id){ return PHASES.find(p => p.id===id) || {name:"General", color:"#8892A0"}; }
+function renderSidebar(){
+  document.getElementById("homeRow").classList.toggle("active", selection.type==="home");
+  const tree = document.getElementById("moduleTree");
+  tree.innerHTML = MODULES.map(m => renderModuleNode(m)).join("");
+  wireSidebarEvents();
+  document.getElementById("addModuleBtn").style.display = EDIT_MODE ? "block" : "none";
+}
 
+function renderModuleNode(m){
+  const isOpen = openNodes.has("module:"+m.id);
+  const isActive = (selection.type==="module" && selection.id===m.id);
+  const kids = topicChildren(m.id, null);
+  const editButtons = EDIT_MODE ? `
+    <div class="sb-actions">
+      <button class="sb-mini-btn" data-action="rename-module" data-id="${m.id}" title="Rename">✎</button>
+      <button class="sb-mini-btn" data-action="add-topic" data-module="${m.id}" data-parent="" title="Add topic">+</button>
+      <button class="sb-mini-btn danger" data-action="delete-module" data-id="${m.id}" title="Delete module">🗑</button>
+    </div>` : "";
+  return `
+    <div>
+      <div class="sb-row ${isActive?'active':''}" data-select="module" data-id="${m.id}">
+        <span class="sb-chev ${isOpen?'open':''}" data-toggle="module:${m.id}">${kids.length?'›':''}</span>
+        <span class="sb-label" data-nodename="module:${m.id}">${escapeHtml(m.name)}</span>
+        ${editButtons}
+      </div>
+      <div class="sb-children" style="display:${isOpen?'block':'none'}; padding-left:12px;">
+        ${kids.map(t => renderTopicNode(t)).join("")}
+      </div>
+    </div>`;
+}
+
+function renderTopicNode(t){
+  const isOpen = openNodes.has("topic:"+t.id);
+  const isActive = (selection.type==="topic" && selection.id===t.id);
+  const kids = TOPICS.filter(x => x.parentId===t.id);
+  const editButtons = EDIT_MODE ? `
+    <div class="sb-actions">
+      <button class="sb-mini-btn" data-action="rename-topic" data-id="${t.id}" title="Rename">✎</button>
+      <button class="sb-mini-btn" data-action="add-topic" data-module="${t.moduleId}" data-parent="${t.id}" title="Add sub-branch">+</button>
+      <button class="sb-mini-btn danger" data-action="delete-topic" data-id="${t.id}" title="Delete">🗑</button>
+    </div>` : "";
+  return `
+    <div>
+      <div class="sb-row ${isActive?'active':''}" data-select="topic" data-id="${t.id}">
+        <span class="sb-chev ${isOpen?'open':''}" data-toggle="topic:${t.id}">${kids.length?'›':''}</span>
+        <span class="sb-dot-color" style="background:${t.color||'#4A6CF7'};"></span>
+        <span class="sb-label" data-nodename="topic:${t.id}">${escapeHtml(t.name)}</span>
+        ${editButtons}
+      </div>
+      <div class="sb-children" style="display:${isOpen?'block':'none'}; padding-left:14px;">
+        ${kids.map(k => renderTopicNode(k)).join("")}
+      </div>
+    </div>`;
+}
+
+function wireSidebarEvents(){
+  document.querySelectorAll("[data-toggle]").forEach(el => {
+    el.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const key = el.dataset.toggle;
+      if(openNodes.has(key)) openNodes.delete(key); else openNodes.add(key);
+      renderSidebar();
+    });
+  });
+  document.querySelectorAll("[data-select]").forEach(el => {
+    el.addEventListener("click", () => {
+      selection = {type:el.dataset.select, id:el.dataset.id};
+      closeSidebarMobile();
+      renderMain();
+      renderSidebar();
+    });
+  });
+  document.querySelectorAll("[data-action]").forEach(btn => {
+    btn.addEventListener("click", (ev) => { ev.stopPropagation(); handleTreeAction(btn); });
+  });
+}
+
+async function handleTreeAction(btn){
+  const action = btn.dataset.action;
+  if(action==="add-topic"){
+    const moduleId = btn.dataset.module, parentId = btn.dataset.parent || null;
+    const id = "t"+Date.now();
+    TOPICS.push({id, moduleId, parentId, name:"New topic", color: PALETTE[TOPICS.length % PALETTE.length]});
+    if(parentId) openNodes.add("topic:"+parentId); else openNodes.add("module:"+moduleId);
+    await persistModulesTopics();
+    renderSidebar();
+    startInlineRename("topic:"+id);
+  } else if(action==="rename-module"){
+    startInlineRename("module:"+btn.dataset.id);
+  } else if(action==="rename-topic"){
+    startInlineRename("topic:"+btn.dataset.id);
+  } else if(action==="delete-module"){
+    if(MODULES.length<=1){ toast("You need at least one module"); return; }
+    const mid = btn.dataset.id;
+    const topicIds = moduleTopicIds(mid);
+    const count = ENTRIES.filter(e => topicIds.includes(e.topicId)).length;
+    const msg = count>0 ? `Delete this module? ${count} ${count===1?'entry':'entries'} inside it will also be deleted.` : "Delete this module?";
+    if(!confirm(msg)) return;
+    for(const e of ENTRIES.filter(e => topicIds.includes(e.topicId))) await safeDelete("entry:"+e.id);
+    ENTRIES = ENTRIES.filter(e => !topicIds.includes(e.topicId));
+    TOPICS = TOPICS.filter(t => t.moduleId!==mid);
+    MODULES = MODULES.filter(m => m.id!==mid);
+    if(selection.type==="module" && selection.id===mid) selection = {type:"home"};
+    await persistModulesTopics();
+    renderSidebar(); renderMain();
+  } else if(action==="delete-topic"){
+    const tid = btn.dataset.id;
+    const ids = descendantTopicIds(tid);
+    const count = ENTRIES.filter(e => ids.includes(e.topicId)).length;
+    const msg = count>0 ? `Delete this topic and its sub-branches? ${count} ${count===1?'entry':'entries'} inside will also be deleted.` : "Delete this topic and its sub-branches?";
+    if(!confirm(msg)) return;
+    for(const e of ENTRIES.filter(e => ids.includes(e.topicId))) await safeDelete("entry:"+e.id);
+    ENTRIES = ENTRIES.filter(e => !ids.includes(e.topicId));
+    TOPICS = TOPICS.filter(t => !ids.includes(t.id));
+    if(selection.type==="topic" && ids.includes(selection.id)) selection = {type:"home"};
+    await persistModulesTopics();
+    renderSidebar(); renderMain();
+  }
+}
+
+function startInlineRename(key){
+  const el = document.querySelector(`[data-nodename="${key}"]`);
+  if(!el) return;
+  const [kind,id] = key.split(":");
+  const current = kind==="module" ? moduleById(id).name : topicById(id).name;
+  const input = document.createElement("input");
+  input.className = "sb-label-input";
+  input.value = current;
+  el.replaceWith(input);
+  input.focus(); input.select();
+  const commit = async () => {
+    const val = input.value.trim() || "Untitled";
+    if(kind==="module") moduleById(id).name = val; else topicById(id).name = val;
+    await persistModulesTopics();
+    renderSidebar();
+  };
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (ev) => { if(ev.key==="Enter") input.blur(); });
+}
+
+document.getElementById("addModuleBtn").addEventListener("click", async () => {
+  const id = "m"+Date.now();
+  MODULES.push({id, name:"New module"});
+  openNodes.add("module:"+id);
+  await persistModulesTopics();
+  renderSidebar();
+  startInlineRename("module:"+id);
+});
+document.getElementById("homeRow").addEventListener("click", () => { selection = {type:"home"}; closeSidebarMobile(); renderMain(); renderSidebar(); });
+
+/* mobile sidebar toggle */
+function closeSidebarMobile(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("sidebarBackdrop").classList.remove("show"); }
+document.getElementById("sidebarToggle").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sidebarBackdrop").classList.toggle("show");
+});
+document.getElementById("sidebarBackdrop").addEventListener("click", closeSidebarMobile);
+
+/* ==========================================================================
+   MAIN CONTENT ROUTER
+   ========================================================================== */
+function renderMain(){
+  const wrap = document.getElementById("contentWrap");
+  document.getElementById("fabAdd").style.display = (selection.type!=="home" && EDIT_MODE) ? "flex" : "none";
+  document.getElementById("searchInput").style.display = (selection.type!=="home") ? "block" : "none";
+  if(selection.type==="home"){ wrap.innerHTML = renderHomeHtml(); wireHomeEvents(); return; }
+  wrap.innerHTML = renderTopicViewHtml();
+  wireTopicViewEvents();
+}
+
+/* ---------------- HOME / RESUME VIEW ---------------- */
+function renderHomeHtml(){
+  const skillsChips = HOME.skills.map((s,i) => `<div class="cloud-chip">${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="skills" data-i="${i}">✕</span>`:""}</div>`).join("");
+  const interestChips = HOME.interests.map((s,i) => `<div class="cloud-chip">${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="interests" data-i="${i}">✕</span>`:""}</div>`).join("");
+  const certChips = HOME.certifications.map((s,i) => `<div class="cloud-chip">🏅 ${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="certifications" data-i="${i}">✕</span>`:""}</div>`).join("");
+  const expHtml = HOME.experience.map((x,i) => `
+    <div class="tl-item">
+      <div class="tl-role" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="role">${escapeHtml(x.role)}</div>
+      <div class="tl-company" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="company">${escapeHtml(x.company)}</div>
+      <div class="tl-period" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="period">${escapeHtml(x.period)}</div>
+      <div class="tl-desc" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="description">${escapeHtml(x.description)}</div>
+      ${EDIT_MODE ? `<button class="btn btn-danger-ghost btn-sm tl-remove" data-remove-exp="${i}">Remove</button>` : ""}
+    </div>`).join("");
+
+  return `
+    <div class="glass-strong" style="padding:28px;">
+      <h1 class="hero-name" contenteditable="${EDIT_MODE}" data-home="name">${escapeHtml(HOME.name)}</h1>
+      <div class="hero-headline" contenteditable="${EDIT_MODE}" data-home="headline">${escapeHtml(HOME.headline)}</div>
+      <div class="hero-about" contenteditable="${EDIT_MODE}" data-home="about">${escapeHtml(HOME.about)}</div>
+      ${EDIT_MODE ? `<div class="edit-hint">Click any text above to edit it directly. Changes save automatically.</div>` : ""}
+    </div>
+
+    <div class="section-title">Experience</div>
+    <div class="glass" style="padding:20px 22px;">
+      <div class="timeline">${expHtml || '<div style="color:var(--ink-faint);font-size:13px;">No experience added yet.</div>'}</div>
+      ${EDIT_MODE ? `<button class="btn btn-ghost btn-sm" id="addExpBtn" style="margin-top:8px;">+ Add experience</button>` : ""}
+    </div>
+
+    <div class="section-title">Skills</div>
+    <div class="glass" style="padding:18px 20px;">
+      <div class="chip-cloud">${skillsChips}${EDIT_MODE?`<input class="add-chip-input" id="addSkillInput" placeholder="+ add skill, Enter">`:""}</div>
+    </div>
+
+    <div class="section-title">Certifications</div>
+    <div class="glass" style="padding:18px 20px;">
+      <div class="chip-cloud">${certChips}${EDIT_MODE?`<input class="add-chip-input" id="addCertInput" placeholder="+ add cert, Enter">`:""}</div>
+    </div>
+
+    <div class="section-title">Interests</div>
+    <div class="glass" style="padding:18px 20px;">
+      <div class="chip-cloud">${interestChips}${EDIT_MODE?`<input class="add-chip-input" id="addInterestInput" placeholder="+ add interest, Enter">`:""}</div>
+    </div>
+  `;
+}
+
+function wireHomeEvents(){
+  document.querySelectorAll("[data-home]").forEach(el => {
+    el.addEventListener("blur", async () => { HOME[el.dataset.home] = el.textContent.trim(); await safeSet("sd-home", JSON.stringify(HOME)); document.getElementById("sbName").textContent = HOME.name; toast("Saved"); });
+  });
+  document.querySelectorAll("[data-exp]").forEach(el => {
+    el.addEventListener("blur", async () => { HOME.experience[el.dataset.exp][el.dataset.field] = el.textContent.trim(); await safeSet("sd-home", JSON.stringify(HOME)); toast("Saved"); });
+  });
+  document.querySelectorAll("[data-remove-exp]").forEach(btn => {
+    btn.addEventListener("click", async () => { HOME.experience.splice(btn.dataset.removeExp,1); await safeSet("sd-home", JSON.stringify(HOME)); renderMain(); });
+  });
+  const addExpBtn = document.getElementById("addExpBtn");
+  if(addExpBtn) addExpBtn.addEventListener("click", async () => {
+    HOME.experience.push({role:"Role", company:"Company", period:"Period", description:"Description"});
+    await safeSet("sd-home", JSON.stringify(HOME));
+    renderMain();
+  });
+  document.querySelectorAll("[data-remove]").forEach(el => {
+    el.addEventListener("click", async () => {
+      const arr = el.dataset.remove;
+      HOME[arr].splice(el.dataset.i,1);
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    });
+  });
+  wireChipInput("addSkillInput","skills");
+  wireChipInput("addCertInput","certifications");
+  wireChipInput("addInterestInput","interests");
+}
+function wireChipInput(inputId, field){
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  el.addEventListener("keydown", async (ev) => {
+    if(ev.key==="Enter" && el.value.trim()){
+      HOME[field].push(el.value.trim());
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    }
+  });
+}
+
+/* ---------------- TOPIC / MODULE VIEW ---------------- */
+function currentTopicIds(){
+  if(selection.type==="module") return moduleTopicIds(selection.id);
+  if(selection.type==="topic") return descendantTopicIds(selection.id);
+  return [];
+}
 function matchesSearch(e){
   if(!searchQuery) return true;
-  const hay = [e.title, e.businessReq, e.config, e.testEvidence, e.lessons, e.errors, e.tcodes].join(" ").toLowerCase();
-  return hay.includes(searchQuery.toLowerCase());
+  const q = searchQuery.toLowerCase();
+  return [e.title,e.tcodes,e.businessReq,e.config,e.testEvidence,e.lessons,e.errors].some(f => (f||"").toLowerCase().includes(q));
 }
 
-function renderFeed(){
-  const list = ENTRIES.filter(e => (currentFilterPhase==="all" || e.phaseId===currentFilterPhase) && matchesSearch(e));
-  const container = document.getElementById("feedContainer");
-
-  if(ENTRIES.length === 0){
-    container.innerHTML = `
-      <div class="empty-state glass" style="border-radius:24px;">
-        <div class="big">🫧</div>
-        <div style="font-family:var(--font-display); font-weight:700; font-size:18px;">Nothing logged yet</div>
-        <p>Tap the + button and add your first SAP SD topic — requirement, configuration, a screenshot, and what you learned.</p>
-      </div>`;
-    return;
+function renderTopicViewHtml(){
+  let heading, ids, siblingChips = "", crumbHtml = "";
+  if(selection.type==="module"){
+    const m = moduleById(selection.id);
+    heading = m ? m.name : "Module";
+    ids = moduleTopicIds(selection.id);
+    const topLevel = topicChildren(selection.id, null);
+    if(topLevel.length){
+      siblingChips = `<div class="chip-scroll">` + topLevel.map(t => `<div class="sib-chip" data-jump="topic:${t.id}">${escapeHtml(t.name)}</div>`).join("") + `</div>`;
+    }
+    crumbHtml = `<div class="crumb"><span data-jump="home">Home</span> / ${escapeHtml(heading)}</div>`;
+  } else {
+    const t = topicById(selection.id);
+    heading = t ? t.name : "Topic";
+    ids = descendantTopicIds(selection.id);
+    const path = topicPath(selection.id);
+    const mod = moduleById(t.moduleId);
+    crumbHtml = `<div class="crumb"><span data-jump="home">Home</span> / <span data-jump="module:${mod.id}">${escapeHtml(mod.name)}</span>` +
+      path.map((p,i) => ` / <span data-jump="topic:${p.id}">${escapeHtml(p.name)}</span>`).join("") + `</div>`;
+    const siblings = t.parentId ? TOPICS.filter(x => x.parentId===t.parentId) : topicChildren(t.moduleId, null);
+    const children = TOPICS.filter(x => x.parentId===t.id);
+    const showList = children.length ? children : siblings;
+    if(showList.length){
+      siblingChips = `<div class="chip-scroll">` + showList.map(x => `<div class="sib-chip ${x.id===selection.id?'active':''}" data-jump="topic:${x.id}">${escapeHtml(x.name)}</div>`).join("") + `</div>`;
+    }
   }
-  if(list.length === 0){
-    container.innerHTML = `<div class="empty-state glass" style="border-radius:24px;"><div class="big">🔍</div><p>No entries match this filter.</p></div>`;
-    return;
-  }
 
-  container.innerHTML = `<div class="section-title">Build log <span class="count">${list.length}</span></div>` +
-    list.map(e => {
-      const ph = phaseById(e.phaseId);
-      const imgs = (e.images||[]);
-      const thumbHtml = imgs.slice(0,4).map((src,i) => i===3 && imgs.length>4
-        ? `<div class="entry-thumb-more">+${imgs.length-3}</div>`
-        : `<img class="entry-thumb" src="${src}">`
-      ).join("");
-      return `
-      <div class="entry-card glass" data-id="${e.id}">
-        <div class="entry-top">
-          <div style="flex:1;min-width:0;">
-            <span class="entry-phase-tag" style="background:${ph.color};">${escapeHtml(ph.name)}</span>
-            <div class="entry-title">${escapeHtml(e.title||"Untitled entry")}</div>
-            <div class="entry-date">${formatDate(e.date)}${e.tcodes ? " · " + escapeHtml(e.tcodes) : ""}</div>
-            ${e.businessReq ? `<div class="entry-req-preview">${escapeHtml(truncate(e.businessReq,140))}</div>` : ""}
-            ${imgs.length ? `<div class="entry-thumbs">${thumbHtml}</div>` : ""}
-          </div>
-          <span class="chev-open">›</span>
+  const list = ENTRIES.filter(e => ids.includes(e.topicId) && matchesSearch(e));
+  const feedHtml = renderFeedHtml(list);
+
+  return `
+    ${crumbHtml}
+    <div class="section-title" style="margin-top:2px;">${escapeHtml(heading)}</div>
+    ${siblingChips}
+    <div id="feedContainer">${feedHtml}</div>
+  `;
+}
+
+function wireTopicViewEvents(){
+  document.querySelectorAll("[data-jump]").forEach(el => {
+    el.addEventListener("click", () => {
+      const val = el.dataset.jump;
+      if(val==="home") selection = {type:"home"};
+      else { const [kind,id] = val.split(":"); selection = {type:kind, id}; }
+      renderMain(); renderSidebar();
+    });
+  });
+  wireFeedEvents();
+}
+
+function renderFeedHtml(list){
+  if(ENTRIES.length===0 || list.length===0){
+    const msg = (list.length===0 && searchQuery) ? "No entries match your search." : "Nothing logged here yet.";
+    return `<div class="empty-state glass"><div class="big">🫧</div><p>${msg}${EDIT_MODE?" Tap the + button to add your first entry.":""}</p></div>`;
+  }
+  return `<div class="section-title"><span class="count">${list.length} ${list.length===1?'entry':'entries'}</span></div>` +
+    list.map(e => renderEntryCard(e)).join("");
+}
+
+function renderEntryCard(e){
+  const t = topicById(e.topicId) || {name:"Untitled topic", color:"#4A6CF7"};
+  const imgs = e.images || [];
+  const thumbHtml = imgs.slice(0,4).map((src,i) => i===3 && imgs.length>4
+    ? `<div class="entry-thumb-more">+${imgs.length-3}</div>`
+    : `<img class="entry-thumb" src="${src}">`
+  ).join("");
+  const isExpanded = expandedEntryId===e.id;
+  const gallery = imgs.map(src => `<img src="${src}" data-lightbox="${src.replace(/"/g,'&quot;')}">`).join("");
+  return `
+    <div class="entry-card glass ${isExpanded?'expanded':''}" data-id="${e.id}">
+      <div class="entry-top" data-toggle-entry="${e.id}">
+        <div style="flex:1;min-width:0;">
+          <span class="entry-tag" style="background:${t.color};">${escapeHtml(t.name)}</span>
+          <div class="entry-title">${escapeHtml(e.title||"Untitled entry")}</div>
+          <div class="entry-date">${formatDate(e.date)}${e.tcodes ? " · "+escapeHtml(e.tcodes) : ""}</div>
+          ${e.businessReq ? `<div class="entry-req-preview">${escapeHtml(truncate(e.businessReq,140))}</div>` : ""}
+          ${imgs.length ? `<div class="entry-thumbs">${thumbHtml}</div>` : ""}
         </div>
-      </div>`;
-    }).join("");
+        <span class="chev">›</span>
+      </div>
+      <div class="entry-detail">
+        <div class="entry-detail-inner">
+          ${e.businessReq ? sec("Business Requirement", e.businessReq, "#4A6CF7") : ""}
+          ${e.config ? sec("Configuration Performed", e.config, "#E0A62A") : ""}
+          ${gallery ? `<div class="detail-sub"><div class="detail-label" style="color:#9A9DA6;"><span class="dash" style="background:#9A9DA6;"></span>Screenshots</div><div class="detail-gallery">${gallery}</div></div>` : ""}
+          ${e.testEvidence ? sec("Test Evidence", e.testEvidence, "#22C1A0") : ""}
+          ${e.lessons ? sec("Lessons Learned", e.lessons, "#3E7A9E") : ""}
+          ${e.errors ? sec("Notes & Fixes", e.errors, "#E0563F") : ""}
+          ${EDIT_MODE ? `<div class="entry-detail-actions">
+            <button class="btn btn-ghost btn-sm" data-edit-entry="${e.id}">Edit entry</button>
+            <button class="btn btn-danger-ghost btn-sm" data-delete-entry="${e.id}">Delete</button>
+          </div>` : ""}
+        </div>
+      </div>
+    </div>`;
+}
+function sec(label, text, color){
+  return `<div class="detail-sub"><div class="detail-label" style="color:${color};"><span class="dash" style="background:${color};"></span>${label}</div><div class="detail-text">${escapeHtml(text)}</div></div>`;
+}
 
-  container.querySelectorAll(".entry-card").forEach(card => {
-    card.addEventListener("click", () => openDetail(card.dataset.id));
+function wireFeedEvents(){
+  document.querySelectorAll("[data-toggle-entry]").forEach(el => {
+    el.addEventListener("click", () => {
+      const id = el.dataset.toggleEntry;
+      expandedEntryId = (expandedEntryId===id) ? null : id;
+      renderMain();
+    });
+  });
+  document.querySelectorAll("[data-lightbox]").forEach(el => {
+    el.addEventListener("click", (ev) => { ev.stopPropagation(); openLightbox(el.dataset.lightbox); });
+  });
+  document.querySelectorAll("[data-edit-entry]").forEach(el => {
+    el.addEventListener("click", (ev) => { ev.stopPropagation(); openForm(el.dataset.editEntry); });
+  });
+  document.querySelectorAll("[data-delete-entry]").forEach(el => {
+    el.addEventListener("click", (ev) => { ev.stopPropagation(); deleteEntry(el.dataset.deleteEntry); });
   });
 }
 
 function truncate(s,n){ return s.length>n ? s.slice(0,n).trim()+"…" : s; }
-function formatDate(d){
-  if(!d) return "";
-  const dt = new Date(d+"T00:00:00");
-  if(isNaN(dt)) return d;
-  return dt.toLocaleDateString(undefined,{month:"short", day:"numeric", year:"numeric"});
-}
+function formatDate(d){ if(!d) return ""; const dt = new Date(d+"T00:00:00"); if(isNaN(dt)) return d; return dt.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}); }
 function escapeHtml(s){ return (s==null?"":String(s)).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
 
-/* ==========================================================================
-   DETAIL VIEW
-   ========================================================================== */
-function openDetail(id){
-  const e = ENTRIES.find(x => x.id===id);
-  if(!e) return;
-  const ph = phaseById(e.phaseId);
-  const gallery = (e.images||[]).map(src => `<img src="${src}" onclick="openLightbox('${src.replace(/'/g,"\\'")}')">`).join("");
-
-  showModal(`
-    <div class="modal-head">
-      <h2>${escapeHtml(e.title||"Untitled entry")}</h2>
-      <button class="icon-btn" onclick="closeModal()">✕</button>
-    </div>
-    <span class="entry-phase-tag" style="background:${ph.color};">${escapeHtml(ph.name)}</span>
-    <span class="entry-date" style="margin-left:8px;">${formatDate(e.date)}</span>
-    ${e.tcodes ? `<div style="margin-top:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);">T-Codes: ${escapeHtml(e.tcodes)}</div>` : ""}
-
-    ${e.businessReq ? sec("Business Requirement", e.businessReq, "#4A6CF7") : ""}
-    ${e.config ? sec("Configuration Performed", e.config, "#E0A62A") : ""}
-    ${gallery ? `<div class="detail-sub"><div class="detail-label" style="color:#5B6472;"><span class="dash" style="background:#5B6472;"></span>Screenshots</div><div class="detail-gallery">${gallery}</div></div>` : ""}
-    ${e.testEvidence ? sec("Test Evidence", e.testEvidence, "#22C1A0") : ""}
-    ${e.lessons ? sec("Lessons Learned", e.lessons, "#3E7A9E") : ""}
-    ${e.errors ? sec("Common Errors & Fixes", e.errors, "#E0563F") : ""}
-
-    <div class="modal-actions">
-      <button class="btn btn-ghost" style="flex:1" onclick="openForm('${e.id}')">Edit entry</button>
-      <button class="btn btn-danger-ghost" onclick="deleteEntry('${e.id}')">Delete</button>
-    </div>
-  `);
+async function deleteEntry(id){
+  if(!confirm("Delete this entry? This can't be undone.")) return;
+  await safeDelete("entry:"+id);
+  ENTRIES = ENTRIES.filter(e => e.id!==id);
+  if(expandedEntryId===id) expandedEntryId = null;
+  renderMain();
+  toast("Entry deleted");
 }
-function sec(label, text, color){
-  return `<div class="detail-sub">
-    <div class="detail-label" style="color:${color};"><span class="dash" style="background:${color};"></span>${label}</div>
-    <div class="detail-text">${escapeHtml(text)}</div>
-  </div>`;
-}
-
-function openLightbox(src){
-  const lb = document.createElement("div");
-  lb.className = "lightbox";
-  lb.innerHTML = `<button class="lightbox-close">✕</button><img src="${src}">`;
-  lb.addEventListener("click", (ev) => { if(ev.target===lb || ev.target.classList.contains("lightbox-close")) lb.remove(); });
-  document.body.appendChild(lb);
-}
-window.openLightbox = openLightbox;
 
 /* ==========================================================================
-   FORM (add / edit)
+   ENTRY FORM (add / edit)
    ========================================================================== */
+function flatTopicOptions(){
+  const opts = [];
+  MODULES.forEach(m => {
+    opts.push({id:"", label:`— ${m.name} —`, disabled:true});
+    const walk = (parentId, depth) => {
+      topicChildren(m.id, parentId).forEach(t => {
+        opts.push({id:t.id, label:"\u3000".repeat(depth) + t.name, disabled:false});
+        walk(t.id, depth+1);
+      });
+    };
+    walk(null, 1);
+  });
+  return opts;
+}
+
 function openForm(existingId){
   editingEntryId = existingId || null;
   const e = editingEntryId ? ENTRIES.find(x=>x.id===editingEntryId) : null;
   pendingImages = e ? (e.images||[]).slice() : [];
+  const defaultTopicId = e ? e.topicId : (selection.type==="topic" ? selection.id : (TOPICS.find(t=>t.moduleId===selection.id) || {}).id);
 
-  const phaseOpts = PHASES.map(p => `<div class="phase-chip-opt ${e&&e.phaseId===p.id ? 'selected':''}" data-phase="${p.id}" style="background:${p.color};">${escapeHtml(p.name)}</div>`).join("");
+  const options = flatTopicOptions().map(o => `<option value="${o.id}" ${o.disabled?'disabled':''} ${o.id===defaultTopicId?'selected':''}>${escapeHtml(o.label)}</option>`).join("");
 
   showModal(`
-    <div class="modal-head">
-      <h2>${e ? "Edit entry" : "Log today's progress"}</h2>
-      <button class="icon-btn" onclick="closeModal()">✕</button>
-    </div>
-    <div class="field">
-      <label>Phase / Topic Area</label>
-      <div class="phase-picker" id="phasePicker">${phaseOpts}</div>
-      <div class="field-hint">Tap to select. <span id="addPhaseLink" style="text-decoration:underline;cursor:pointer;">+ add a new phase</span></div>
-    </div>
-    <div class="field">
-      <label>Title</label>
-      <input type="text" id="fTitle" placeholder="e.g. Configured Pricing Procedure Determination" value="${e ? escapeHtml(e.title) : ""}">
-    </div>
+    <div class="modal-head"><h2>${e ? "Edit entry" : "Log a new entry"}</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Topic</label><select id="fTopic">${options}</select></div>
+    <div class="field"><label>Title</label><input type="text" id="fTitle" placeholder="e.g. Configured Pricing Procedure Determination" value="${e?escapeHtml(e.title):""}"></div>
     <div class="field" style="display:flex; gap:12px;">
-      <div style="flex:1;">
-        <label>Date</label>
-        <input type="date" id="fDate" value="${e ? e.date : new Date().toISOString().slice(0,10)}">
-      </div>
-      <div style="flex:1;">
-        <label>T-Codes (optional)</label>
-        <input type="text" id="fTcodes" placeholder="VOV8, VK11…" value="${e ? escapeHtml(e.tcodes||"") : ""}">
-      </div>
+      <div style="flex:1;"><label>Date</label><input type="date" id="fDate" value="${e?e.date:new Date().toISOString().slice(0,10)}"></div>
+      <div style="flex:1;"><label>T-Codes (optional)</label><input type="text" id="fTcodes" placeholder="VOV8, VK11…" value="${e?escapeHtml(e.tcodes||""):""}"></div>
     </div>
-    <div class="field">
-      <label>Business Requirement</label>
-      <textarea id="fReq" placeholder="What did the business ask for?">${e ? escapeHtml(e.businessReq||"") : ""}</textarea>
-    </div>
-    <div class="field">
-      <label>Configuration Performed</label>
-      <textarea id="fConfig" placeholder="Steps you took, IMG paths, settings changed…">${e ? escapeHtml(e.config||"") : ""}</textarea>
-    </div>
+    <div class="field"><label>Business Requirement</label><textarea id="fReq" placeholder="What did the business ask for?">${e?escapeHtml(e.businessReq||""):""}</textarea></div>
+    <div class="field"><label>Configuration Performed</label><textarea id="fConfig" placeholder="Steps you took, IMG paths, settings changed…">${e?escapeHtml(e.config||""):""}</textarea></div>
     <div class="field">
       <label>Screenshots</label>
       <div class="upload-zone" id="uploadZone">
-        <div style="font-size:22px;">📎</div>
-        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;">Tap to upload screenshots (auto-compressed to keep this browser's storage happy)</div>
+        <div style="font-size:20px;">📎</div>
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">Tap to upload screenshots (auto-compressed)</div>
         <input type="file" id="fileInput" accept="image/*" multiple>
       </div>
       <div class="img-preview-row" id="imgPreviewRow"></div>
     </div>
-    <div class="field">
-      <label>Test Evidence</label>
-      <textarea id="fTest" placeholder="What did you test, and what happened?">${e ? escapeHtml(e.testEvidence||"") : ""}</textarea>
-    </div>
-    <div class="field">
-      <label>Lessons Learned</label>
-      <textarea id="fLessons" placeholder="What would you tell yourself next time?">${e ? escapeHtml(e.lessons||"") : ""}</textarea>
-    </div>
-    <div class="field">
-      <label>Common Errors & How You Fixed Them</label>
-      <textarea id="fErrors" placeholder="Error → root cause → fix">${e ? escapeHtml(e.errors||"") : ""}</textarea>
-    </div>
+    <div class="field"><label>Test Evidence</label><textarea id="fTest" placeholder="What did you test, and what happened?">${e?escapeHtml(e.testEvidence||""):""}</textarea></div>
+    <div class="field"><label>Lessons Learned</label><textarea id="fLessons" placeholder="What would you tell yourself next time?">${e?escapeHtml(e.lessons||""):""}</textarea></div>
+    <div class="field"><label>Notes & Fixes</label><textarea id="fErrors" placeholder="Anything worth remembering">${e?escapeHtml(e.errors||""):""}</textarea></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" id="saveEntryBtn">${e ? "Save changes" : "Save entry"}</button>
+      <button class="btn btn-primary" id="saveEntryBtn">${e?"Save changes":"Save entry"}</button>
     </div>
   `);
-
-  let selectedPhase = e ? e.phaseId : (PHASES[0] && PHASES[0].id);
-  document.getElementById("phasePicker").addEventListener("click", (ev) => {
-    const chip = ev.target.closest(".phase-chip-opt");
-    if(!chip) return;
-    selectedPhase = chip.dataset.phase;
-    document.querySelectorAll(".phase-chip-opt").forEach(c => c.classList.toggle("selected", c===chip));
-  });
-  document.getElementById("addPhaseLink").addEventListener("click", async () => {
-    const name = prompt("New phase / topic area name:");
-    if(!name) return;
-    const palette = ["#4A6CF7","#A25BF0","#FF6FA5","#E0A62A","#22C1A0","#3E7A9E","#7A6FF0","#D96C4F"];
-    const color = palette[PHASES.length % palette.length];
-    const newPhase = {id:"p"+Date.now(), name, color};
-    PHASES.push(newPhase);
-    await safeSet("sd-phases", JSON.stringify(PHASES));
-    renderTabs();
-    openForm(editingEntryId); // re-render form with new phase available
-  });
 
   renderImgPreviews();
   document.getElementById("uploadZone").addEventListener("click", () => document.getElementById("fileInput").click());
@@ -782,13 +913,14 @@ function openForm(existingId){
 
   document.getElementById("saveEntryBtn").addEventListener("click", async () => {
     const title = document.getElementById("fTitle").value.trim();
+    const topicId = document.getElementById("fTopic").value;
     if(!title){ toast("Give the entry a title first"); return; }
-    const btn = document.getElementById("saveEntryBtn");
-    btn.disabled = true; btn.textContent = "Saving…";
+    if(!topicId){ toast("Pick a topic first"); return; }
+    const btn = document.getElementById("saveEntryBtn"); btn.disabled = true; btn.textContent = "Saving…";
 
     const entry = {
-      id: editingEntryId || ("e" + Date.now()),
-      phaseId: selectedPhase,
+      id: editingEntryId || ("e"+Date.now()),
+      topicId,
       title,
       date: document.getElementById("fDate").value || new Date().toISOString().slice(0,10),
       tcodes: document.getElementById("fTcodes").value.trim(),
@@ -800,7 +932,7 @@ function openForm(existingId){
       images: pendingImages.slice(),
       createdAt: (editingEntryId && e && e.createdAt) || Date.now()
     };
-    const ok = await safeSet("entry:" + entry.id, JSON.stringify(entry));
+    const ok = await safeSet("entry:"+entry.id, JSON.stringify(entry));
     btn.disabled = false;
     if(!ok){ toast("Save failed — try again"); return; }
 
@@ -808,124 +940,84 @@ function openForm(existingId){
     if(idx>=0) ENTRIES[idx] = entry; else ENTRIES.unshift(entry);
     ENTRIES.sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
 
+    // jump to the entry's topic, expand it inline, scroll to it — no popup
+    selection = {type:"topic", id:topicId};
+    expandedEntryId = entry.id;
     closeModal();
-    renderStats(); renderTabs(); renderFeed();
+    renderSidebar();
+    renderMain();
+    setTimeout(() => {
+      const card = document.querySelector(`[data-id="${entry.id}"]`);
+      if(card) card.scrollIntoView({behavior:"smooth", block:"start"});
+    }, 60);
     toast(editingEntryId ? "Entry updated" : "Entry saved");
   });
 }
 window.openForm = openForm;
 
+document.getElementById("fabAdd").addEventListener("click", () => openForm(null));
+
+/* ---------------- image handling ---------------- */
 function renderImgPreviews(){
   const row = document.getElementById("imgPreviewRow");
-  if(!row) return;
-  row.innerHTML = pendingImages.map((src,i) => `
-    <div class="img-preview"><img src="${src}"><button class="rm" data-i="${i}">✕</button></div>
-  `).join("");
-  row.querySelectorAll(".rm").forEach(b => b.addEventListener("click", (ev) => {
-    ev.stopPropagation();
-    pendingImages.splice(parseInt(b.dataset.i),1);
-    renderImgPreviews();
-  }));
+  row.innerHTML = pendingImages.map((src,i) => `<div class="img-preview"><img src="${src}"><button class="rm" data-rm="${i}">✕</button></div>`).join("");
+  row.querySelectorAll("[data-rm]").forEach(b => b.addEventListener("click", () => { pendingImages.splice(parseInt(b.dataset.rm),1); renderImgPreviews(); }));
 }
-
 function handleFileSelect(ev){
   const files = Array.from(ev.target.files || []);
   files.forEach(file => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (e2) => {
       const img = new Image();
       img.onload = () => {
-        const maxW = 820;
-        const scale = Math.min(1, maxW / img.width);
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.62);
-        pendingImages.push(dataUrl);
+        const maxDim = 1400;
+        let w = img.width, h = img.height;
+        if(w>maxDim || h>maxDim){ const scale = maxDim/Math.max(w,h); w*=scale; h*=scale; }
+        const canvas = document.createElement("canvas"); canvas.width=w; canvas.height=h;
+        const ctx = canvas.getContext("2d"); ctx.drawImage(img,0,0,w,h);
+        pendingImages.push(canvas.toDataURL("image/jpeg",0.62));
         renderImgPreviews();
       };
-      img.src = e.target.result;
+      img.src = e2.target.result;
     };
     reader.readAsDataURL(file);
   });
   ev.target.value = "";
 }
 
-async function deleteEntry(id){
-  if(!confirm("Delete this entry? This can't be undone.")) return;
-  await safeDelete("entry:" + id);
-  ENTRIES = ENTRIES.filter(e => e.id!==id);
-  closeModal();
-  renderStats(); renderFeed();
-  toast("Entry deleted");
-}
-window.deleteEntry = deleteEntry;
-
-/* ==========================================================================
-   PROFILE EDIT
-   ========================================================================== */
-function openProfileForm(){
-  const p = window.__profile || {};
-  showModal(`
-    <div class="modal-head"><h2>Edit profile</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
-    <div class="field"><label>Your name</label><input type="text" id="pName" value="${escapeHtml(p.name||"")}"></div>
-    <div class="field"><label>Headline</label><input type="text" id="pTitle" value="${escapeHtml(p.title||"")}"></div>
-    <div class="field"><label>Tagline</label><textarea id="pTagline">${escapeHtml(p.tagline||"")}</textarea></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" id="saveProfileBtn">Save</button>
-    </div>
-  `);
-  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-    const profile = {
-      name: document.getElementById("pName").value.trim() || "Your Name",
-      title: document.getElementById("pTitle").value.trim(),
-      tagline: document.getElementById("pTagline").value.trim()
-    };
-    await safeSet("sd-profile", JSON.stringify(profile));
-    applyProfile(profile);
-    closeModal();
-    toast("Profile updated");
-  });
+function openLightbox(src){
+  const lb = document.createElement("div");
+  lb.className = "lightbox";
+  lb.innerHTML = `<button class="lightbox-close">✕</button><img src="${src}">`;
+  lb.addEventListener("click", (ev) => { if(ev.target===lb || ev.target.classList.contains("lightbox-close")) lb.remove(); });
+  document.body.appendChild(lb);
 }
 
 /* ==========================================================================
-   BACKUP / RESTORE — localStorage is per-browser, per-device. This is the
-   sync mechanism: export a JSON snapshot (commit it into your repo under
-   /backups if you want version history), and import it on any other
-   browser/device to restore everything.
+   BACKUP / RESTORE / PUBLISH
    ========================================================================== */
 function openBackupModal(){
   const bytes = estimateStorageBytes();
   const kb = (bytes/1024).toFixed(1);
   showModal(`
-    <div class="modal-head"><h2>Backup &amp; restore</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
-    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;">
-      Everything is saved in <strong>this browser only</strong> (localStorage). It will not
-      follow you to another browser, device, or a fresh clone of the repo. Export a backup
-      regularly — you can even commit the file into a <code>/backups</code> folder in your repo
-      for version history — and import it to restore on any device.
+    <div class="modal-head"><h2>Backup, restore &amp; publish</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <p style="font-size:13px;color:var(--ink-soft);line-height:1.6;">
+      Everything is saved in <strong>this browser only</strong>. Publish downloads a
+      <code>data.json</code> you commit to your repo root so visitors see your real content.
     </p>
-    <div class="stat-chip glass" style="margin:14px 0;">
-      <div class="num">${kb} KB</div>
-      <div class="lbl">currently stored in this browser</div>
+    <div class="glass" style="padding:12px 16px; margin:14px 0; text-align:center;">
+      <div style="font-family:var(--font-display); font-weight:700; font-size:18px;">${kb} KB</div>
+      <div style="font-size:11px;color:var(--ink-faint);">stored in this browser</div>
     </div>
     <div class="modal-actions" style="flex-direction:column;gap:10px;">
-      <button class="btn btn-primary" id="publishBtn">🌐 Publish (download data.json)</button>
-      <div style="font-size:12px;color:var(--ink-soft);line-height:1.5;">
-        Downloads as <code>data.json</code>. Drop it into your repo's root folder
-        (replacing the old one) and push — that's what makes your site show real
-        content to visitors instead of an empty page.
-      </div>
-      <button class="btn" id="exportBtn" style="margin-top:6px;">⬇ Export dated backup (.json)</button>
+      <button class="btn btn-primary" id="publishBtn" style="width:100%;">🌐 Publish (download data.json)</button>
+      <button class="btn btn-ghost" id="exportBtn" style="width:100%;">⬇ Export dated backup (.json)</button>
     </div>
     <div class="field" style="margin-top:18px;">
       <label>Restore from a backup file</label>
       <div class="upload-zone" id="importZone">
-        <div style="font-size:22px;">📂</div>
-        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;">Tap to choose a .json backup — this replaces everything currently in this browser</div>
+        <div style="font-size:20px;">📂</div>
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">Tap to choose a .json backup — replaces everything in this browser</div>
         <input type="file" id="importInput" accept="application/json">
       </div>
     </div>
@@ -935,41 +1027,15 @@ function openBackupModal(){
   document.getElementById("importZone").addEventListener("click", () => document.getElementById("importInput").click());
   document.getElementById("importInput").addEventListener("change", importBackup);
 }
-
+function buildPayload(){ return {exportedAt:new Date().toISOString(), home:HOME, modules:MODULES, topics:TOPICS, entries:ENTRIES}; }
 function downloadJson(payload, filename){
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  const a = document.createElement("a"); a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
-
-async function publishData(){
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    profile: window.__profile || {},
-    phases: PHASES,
-    entries: ENTRIES
-  };
-  downloadJson(payload, "data.json");
-  toast("data.json downloaded — replace it in your repo and push");
-}
-
-async function exportBackup(){
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    profile: window.__profile || {},
-    phases: PHASES,
-    entries: ENTRIES
-  };
-  downloadJson(payload, `sd-log-backup-${new Date().toISOString().slice(0,10)}.json`);
-  toast("Backup downloaded");
-}
-
+async function publishData(){ downloadJson(buildPayload(), "data.json"); toast("data.json downloaded — replace it in your repo and push"); }
+async function exportBackup(){ downloadJson(buildPayload(), `sd-log-backup-${new Date().toISOString().slice(0,10)}.json`); toast("Backup downloaded"); }
 function importBackup(ev){
   const file = ev.target.files && ev.target.files[0];
   if(!file) return;
@@ -978,21 +1044,21 @@ function importBackup(ev){
   reader.onload = async (e) => {
     try{
       const data = JSON.parse(e.target.result);
-      if(data.profile){ await safeSet("sd-profile", JSON.stringify(data.profile)); applyProfile(data.profile); }
-      if(data.phases){ PHASES = data.phases; await safeSet("sd-phases", JSON.stringify(PHASES)); }
+      if(data.home){ HOME = data.home; await safeSet("sd-home", JSON.stringify(HOME)); }
+      if(data.modules){ MODULES = data.modules; }
+      if(data.topics){ TOPICS = data.topics; }
+      await persistModulesTopics();
       if(Array.isArray(data.entries)){
-        // clear existing entries first
         const existingKeys = await safeList("entry:");
         for(const k of existingKeys) await safeDelete(k);
-        for(const entry of data.entries) await safeSet("entry:" + entry.id, JSON.stringify(entry));
+        for(const entry of data.entries) await safeSet("entry:"+entry.id, JSON.stringify(entry));
         ENTRIES = data.entries.slice().sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
       }
       closeModal();
-      renderStats(); renderTabs(); renderFeed();
+      selection = {type:"home"};
+      renderSidebar(); renderMain();
       toast("Backup restored");
-    }catch(err){
-      toast("That file doesn't look like a valid backup");
-    }
+    }catch(err){ toast("That file doesn't look like a valid backup"); }
   };
   reader.readAsText(file);
 }
@@ -1003,66 +1069,31 @@ function importBackup(ev){
 function showModal(innerHtml){
   closeModal();
   const overlay = document.createElement("div");
-  overlay.className = "modal-overlay";
-  overlay.id = "activeModalOverlay";
+  overlay.className = "modal-overlay"; overlay.id = "activeModalOverlay";
   overlay.innerHTML = `<div class="modal glass-strong">${innerHtml}</div>`;
   overlay.addEventListener("click", (ev) => { if(ev.target===overlay) closeModal(); });
   document.body.appendChild(overlay);
 }
-function closeModal(){
-  const el = document.getElementById("activeModalOverlay");
-  if(el) el.remove();
-}
+function closeModal(){ const el = document.getElementById("activeModalOverlay"); if(el) el.remove(); }
 window.closeModal = closeModal;
-
 function toast(msg){
-  const t = document.createElement("div");
-  t.className = "toast";
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2200);
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
 }
 
 /* ==========================================================================
    INIT
    ========================================================================== */
-document.getElementById("fabAdd").addEventListener("click", () => openForm(null));
-document.getElementById("editProfileBtn").addEventListener("click", openProfileForm);
 document.getElementById("backupBtn").addEventListener("click", openBackupModal);
-
-/* ==========================================================================
-   EDIT MODE — the "+", edit-profile pencil, and backup/publish buttons only
-   ever appear when you're authoring locally (opened as a file, or via
-   localhost), or when you deliberately add ?edit=1 to the URL. On the plain
-   public GitHub Pages link, visitors get a clean read-only view with no
-   controls that could look editable, even though nothing they'd click could
-   ever change your real published site anyway (edits only ever save to
-   *their own* browser).
-   ========================================================================== */
-const EDIT_MODE = (
-  location.protocol === "file:" ||
-  location.hostname === "localhost" ||
-  location.hostname === "127.0.0.1" ||
-  new URLSearchParams(location.search).get("edit") === "1"
-);
-if(!EDIT_MODE){
-  document.getElementById("fabAdd").style.display = "none";
-  document.getElementById("editProfileBtn").style.display = "none";
-  document.getElementById("backupBtn").style.display = "none";
-}
-document.getElementById("searchInput").addEventListener("input", (ev) => {
-  searchQuery = ev.target.value;
-  renderFeed();
-});
-window.addEventListener("scroll", () => {
-  document.getElementById("island").classList.toggle("shrunk", window.scrollY > 40);
-});
+document.getElementById("searchInput").addEventListener("input", (ev) => { searchQuery = ev.target.value; renderMain(); });
+if(!EDIT_MODE) document.getElementById("backupBtn").style.display = "none";
 
 (async function init(){
   await loadAll();
-  renderStats();
-  renderTabs();
-  renderFeed();
+  document.getElementById("sbName").textContent = HOME.name;
+  document.getElementById("sbInitials").textContent = (HOME.name||"?? ").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+  renderSidebar();
+  renderMain();
   document.getElementById("loadingVeil").style.display = "none";
 })();
 </script>
