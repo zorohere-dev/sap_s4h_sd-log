@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SD Log — SAP SD Consultant Portfolio</title>
+<!--
+  ============================================================================
+  RUN THIS FROM YOUR OWN GITHUB REPO — NO BUILD STEP, NO BACKEND, NO COST.
+
+  Quick setup:
+    1. Create a new repo on GitHub (Private is fine — see note below).
+    2. Add this file as index.html at the repo root.
+    3. git add index.html && git commit -m "SD log" && git push
+    4. (Optional hosting) Settings > Pages > Deploy from branch > main > / (root)
+       Note: free GitHub accounts can only publish Pages from a PUBLIC repo.
+       If you want this to stay actually private, either:
+         a) keep the repo private and just open index.html locally
+            (double-click it, or use VS Code's "Live Server" extension), or
+         b) upgrade the repo to Pages hosting knowing it'll be public-by-URL.
+    5. Everything you log is saved in THIS BROWSER via localStorage — nothing
+       is sent anywhere. Use the ⇅ backup button regularly to export a .json
+       snapshot; commit it to a /backups folder in the repo for real version
+       history, and use "Restore" to load it on another browser/device.
+  ============================================================================
+-->
+<style>
+  :root{
+    --glass: rgba(255,255,255,0.55);
+    --glass-strong: rgba(255,255,255,0.72);
+    --glass-border: rgba(255,255,255,0.75);
+    --ink: #1B2130;
+    --ink-soft: #5B6472;
+    --ink-faint: #93A0B2;
+    --accent: #4A6CF7;
+    --accent-2: #A25BF0;
+    --accent-3: #FF6FA5;
+    --accent-4: #22C1A0;
+    --danger: #E0563F;
+    --radius-lg: 28px;
+    --radius-md: 18px;
+    --radius-sm: 12px;
+    --font-display: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    --font-body: -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:var(--font-body);
+    color:var(--ink);
+    background: #EEF1F8;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------------- Liquid background ---------------- */
+  .bg-scene{
+    position:fixed; inset:0; z-index:-1; overflow:hidden;
+    background: linear-gradient(180deg,#F3F5FB 0%, #EAEEF9 60%, #E7ECF7 100%);
+  }
+  .blob{
+    position:absolute; border-radius:50%;
+    filter: blur(60px);
+    opacity:0.55;
+    mix-blend-mode: normal;
+    animation: drift 26s ease-in-out infinite;
+  }
+  .blob.b1{ width:520px; height:520px; top:-160px; left:-120px;
+    background: radial-gradient(circle at 30% 30%, var(--accent), transparent 70%); animation-duration: 30s;}
+  .blob.b2{ width:460px; height:460px; top:10%; right:-140px;
+    background: radial-gradient(circle at 60% 40%, var(--accent-3), transparent 70%); animation-duration: 24s; animation-delay:-6s;}
+  .blob.b3{ width:420px; height:420px; bottom:-140px; left:12%;
+    background: radial-gradient(circle at 50% 50%, var(--accent-4), transparent 70%); animation-duration: 34s; animation-delay:-12s;}
+  .blob.b4{ width:380px; height:380px; bottom:-80px; right:8%;
+    background: radial-gradient(circle at 40% 60%, var(--accent-2), transparent 70%); animation-duration: 28s; animation-delay:-18s;}
+  @keyframes drift{
+    0%{ transform: translate(0,0) scale(1); }
+    33%{ transform: translate(30px,-25px) scale(1.08); }
+    66%{ transform: translate(-25px,20px) scale(0.96); }
+    100%{ transform: translate(0,0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce){ .blob{ animation:none; } }
+
+  /* ---------------- Glass utility ---------------- */
+  .glass{
+    background: var(--glass);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(31,41,66,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .glass-strong{
+    background: var(--glass-strong);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 12px 40px rgba(31,41,66,0.14), inset 0 1px 0 rgba(255,255,255,0.7);
+  }
+
+  /* ---------------- Top island nav ---------------- */
+  .island-wrap{
+    position:sticky; top:14px; z-index:40;
+    display:flex; justify-content:center;
+    padding: 0 16px;
+  }
+  .island{
+    border-radius: 999px;
+    padding: 8px 10px;
+    display:flex; align-items:center; gap:6px;
+    max-width: 980px; width:100%;
+    transition: padding .25s ease, transform .25s ease;
+  }
+  .island.shrunk{ padding:5px 8px; transform: scale(0.97); }
+  .brand-pill{
+    display:flex; align-items:center; gap:8px;
+    padding: 6px 12px 6px 6px;
+    border-radius: 999px;
+    flex:none;
+  }
+  .brand-dot{
+    width:30px; height:30px; border-radius:50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:13px; font-family:var(--font-mono);
+    flex:none;
+  }
+  .brand-text{ line-height:1.15; }
+  .brand-text .name{ font-weight:700; font-size:13.5px; }
+  .brand-text .role{ font-size:10.5px; color:var(--ink-soft); }
+  .island-tabs{
+    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; flex:1;
+  }
+  .island-tabs::-webkit-scrollbar{ display:none; }
+  .tab-btn{
+    flex:none;
+    font-family:var(--font-body);
+    font-size:12.5px; font-weight:600;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border:none; cursor:pointer;
+    background: transparent;
+    color: var(--ink-soft);
+    white-space:nowrap;
+    transition: background .2s, color .2s;
+  }
+  .tab-btn:hover{ background: rgba(255,255,255,0.5); }
+  .tab-btn.active{
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color:#fff;
+    box-shadow: 0 4px 14px rgba(74,108,247,0.35);
+  }
+  .icon-btn{
+    flex:none;
+    width:36px; height:36px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer; background: rgba(255,255,255,0.5);
+    color:var(--ink-soft); font-size:15px;
+  }
+  .icon-btn:hover{ background: rgba(255,255,255,0.8); color:var(--ink); }
+
+  /* ---------------- Layout ---------------- */
+  .wrap{ max-width: 980px; margin: 0 auto; padding: 22px 16px 140px; }
+
+  .hero-card{
+    border-radius: var(--radius-lg);
+    padding: 30px 30px 26px;
+    margin-bottom: 22px;
+    position:relative; overflow:hidden;
+  }
+  .hero-eyebrow{
+    font-family: var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color: var(--accent); display:flex; align-items:center; gap:7px; font-weight:700;
+  }
+  .hero-eyebrow::before{ content:""; width:7px;height:7px;border-radius:50%; background: var(--accent-4); }
+  .hero-title{
+    font-family: var(--font-display); font-weight:700; font-size: clamp(24px,4vw,32px);
+    margin: 8px 0 6px; letter-spacing:-0.01em;
+  }
+  .hero-sub{ color:var(--ink-soft); font-size:14px; max-width:560px; margin:0 0 20px; }
+
+  .stat-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .stat-chip{
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    min-width:110px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.7);
+  }
+  .stat-chip .num{ font-family:var(--font-display); font-weight:700; font-size:22px; }
+  .stat-chip .lbl{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
+
+  .search-row{ display:flex; gap:10px; margin-bottom:18px; }
+  .search-input{
+    flex:1; border-radius: 999px; border:1px solid rgba(255,255,255,0.8);
+    padding: 12px 18px; font-size:13.5px; font-family:var(--font-body);
+    background: rgba(255,255,255,0.55); backdrop-filter: blur(16px);
+    color: var(--ink);
+  }
+  .search-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .search-input::placeholder{ color: var(--ink-faint); }
+
+  .section-title{
+    font-family: var(--font-display); font-weight:700; font-size:17px;
+    margin: 26px 0 12px; display:flex; align-items:center; gap:10px;
+  }
+  .section-title .count{
+    font-family: var(--font-mono); font-size:11px; color:var(--ink-soft);
+    background: rgba(255,255,255,0.6); padding:2px 9px; border-radius:999px;
+  }
+
+  /* ---------------- Entry cards ---------------- */
+  .entry-card{
+    border-radius: var(--radius-md);
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    cursor:pointer;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .entry-card:hover{ transform: translateY(-2px); }
+  .entry-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+  .entry-phase-tag{
+    font-family: var(--font-mono); font-size:10.5px; font-weight:700; letter-spacing:.04em;
+    padding: 4px 10px; border-radius:999px; color:#fff; display:inline-block; margin-bottom:8px;
+  }
+  .entry-title{ font-family: var(--font-display); font-weight:700; font-size:17px; margin:0 0 4px; }
+  .entry-date{ font-family: var(--font-mono); font-size:11px; color: var(--ink-faint); }
+  .entry-req-preview{ font-size:13px; color: var(--ink-soft); margin-top:8px; line-height:1.5; }
+  .entry-thumbs{ display:flex; gap:6px; margin-top:12px; }
+  .entry-thumb{ width:46px; height:46px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.8); }
+  .entry-thumb-more{
+    width:46px; height:46px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    background: rgba(0,0,0,0.06); font-size:11px; font-weight:700; color:var(--ink-soft);
+  }
+  .chev-open{ color:var(--ink-faint); font-size:20px; }
+
+  .empty-state{
+    text-align:center; padding: 50px 20px; color: var(--ink-faint);
+  }
+  .empty-state .big{ font-size:40px; margin-bottom:10px; }
+  .empty-state p{ font-size:13.5px; max-width:360px; margin: 6px auto 0; }
+
+  /* ---------------- FAB ---------------- */
+  .fab{
+    position:fixed; right:22px; bottom:26px; z-index:50;
+    width:60px; height:60px; border-radius:50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color:#fff; border:none; cursor:pointer;
+    font-size:26px; display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 10px 30px rgba(74,108,247,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: transform .18s ease;
+  }
+  .fab:hover{ transform: scale(1.06) rotate(90deg); }
+
+  /* ---------------- Modal ---------------- */
+  .modal-overlay{
+    position:fixed; inset:0; background: rgba(20,24,38,0.35);
+    backdrop-filter: blur(6px);
+    z-index:100; display:flex; align-items:flex-end; justify-content:center;
+    animation: fadeIn .2s ease;
+  }
+  @media (min-width:700px){ .modal-overlay{ align-items:center; } }
+  @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+  .modal{
+    width:100%; max-width: 640px; max-height: 92vh; overflow-y:auto;
+    border-radius: 26px 26px 0 0;
+    padding: 26px 24px 100px;
+    animation: slideUp .25s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @media (min-width:700px){ .modal{ border-radius: 26px; padding-bottom:26px; margin-bottom:26px;} }
+  @keyframes slideUp{ from{ transform: translateY(40px); opacity:0;} to{ transform:translateY(0); opacity:1; } }
+
+  .modal-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .modal-head h2{ font-family: var(--font-display); font-size:20px; margin:0; }
+
+  .field{ margin-bottom:16px; }
+  .field label{
+    display:block; font-family: var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em;
+    color: var(--ink-soft); font-weight:700; margin-bottom:6px;
+  }
+  .field input[type="text"], .field input[type="date"], .field textarea, .field select{
+    width:100%; padding: 11px 14px; border-radius: 13px; border:1px solid rgba(0,0,0,0.08);
+    background: rgba(255,255,255,0.7); font-family: var(--font-body); font-size:13.5px; color: var(--ink);
+    resize: vertical;
+  }
+  .field textarea{ min-height:70px; line-height:1.5; }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:2px solid var(--accent); outline-offset:0; }
+  .field-hint{ font-size:11px; color:var(--ink-faint); margin-top:4px; }
+
+  .phase-picker{ display:flex; flex-wrap:wrap; gap:8px; }
+  .phase-chip-opt{
+    padding:8px 13px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;
+    border: 1.5px solid transparent; color:#fff;
+  }
+  .phase-chip-opt.selected{ box-shadow: 0 0 0 2.5px rgba(0,0,0,0.18) inset; }
+
+  .upload-zone{
+    border: 1.6px dashed rgba(0,0,0,0.16); border-radius: 16px;
+    padding: 18px; text-align:center; cursor:pointer;
+    background: rgba(255,255,255,0.4);
+  }
+  .upload-zone:hover{ background: rgba(255,255,255,0.65); }
+  .upload-zone input{ display:none; }
+  .img-preview-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .img-preview{ position:relative; width:64px; height:64px; }
+  .img-preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; border:1px solid rgba(0,0,0,0.08); }
+  .img-preview .rm{
+    position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
+    background: var(--danger); color:#fff; border:none; font-size:11px; cursor:pointer; line-height:1;
+  }
+
+  .modal-actions{ display:flex; gap:10px; margin-top:22px; }
+  .btn{
+    font-family: var(--font-body); font-weight:600; font-size:13.5px;
+    padding: 12px 20px; border-radius: 999px; border:none; cursor:pointer;
+  }
+  .btn-primary{ background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; flex:1; }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-ghost{ background: rgba(0,0,0,0.06); color: var(--ink-soft); }
+  .btn-danger-ghost{ background: rgba(224,86,63,0.1); color: var(--danger); }
+
+  /* ---------------- Detail viewer ---------------- */
+  .detail-sub{ margin-bottom:18px; }
+  .detail-label{
+    font-family: var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    font-weight:700; margin-bottom:8px; display:flex; align-items:center; gap:7px;
+  }
+  .detail-label .dash{ width:16px; height:2px; display:inline-block; }
+  .detail-text{ font-size:14px; line-height:1.6; color:var(--ink); white-space:pre-wrap; }
+  .detail-gallery{ display:grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap:8px; }
+  .detail-gallery img{ width:100%; height:100px; object-fit:cover; border-radius:12px; cursor:zoom-in; border:1px solid rgba(0,0,0,0.06); }
+
+  .lightbox{
+    position:fixed; inset:0; background:rgba(10,12,20,0.85); z-index:200;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .lightbox img{ max-width:100%; max-height:100%; border-radius:14px; }
+  .lightbox-close{
+    position:absolute; top:20px; right:20px; width:40px; height:40px; border-radius:50%;
+    background: rgba(255,255,255,0.15); color:#fff; border:none; font-size:18px; cursor:pointer;
+  }
+
+  .toast{
+    position:fixed; bottom:100px; left:50%; transform: translateX(-50%);
+    padding: 11px 20px; border-radius:999px; font-size:13px; font-weight:600;
+    color:#fff; background: rgba(30,34,48,0.92); z-index:300;
+    animation: toastIn .25s ease;
+  }
+  @keyframes toastIn{ from{opacity:0; transform:translate(-50%,10px);} to{opacity:1; transform:translate(-50%,0);} }
+
+  .loading-veil{
+    position:fixed; inset:0; background:#EEF1F8; z-index:500;
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px;
+  }
+  .spinner{
+    width:34px; height:34px; border-radius:50%;
+    border: 3px solid rgba(74,108,247,0.2); border-top-color: var(--accent);
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg);} }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.15); border-radius:8px; }
+</style>
+</head>
+<body>
+
+<div class="bg-scene">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="blob b4"></div>
+</div>
+
+<div id="loadingVeil" class="loading-veil">
+  <div class="spinner"></div>
+  <div style="font-family:var(--font-mono); font-size:12px; color:#5B6472;">loading your workspace…</div>
+</div>
+
+<div class="island-wrap">
+  <nav class="island glass-strong" id="island">
+    <div class="brand-pill">
+      <div class="brand-dot">SD</div>
+      <div class="brand-text">
+        <div class="name" id="brandName">SD Log</div>
+        <div class="role">SAP SD Consultant Portfolio</div>
+      </div>
+    </div>
+    <div class="island-tabs" id="islandTabs"></div>
+    <button class="icon-btn" id="backupBtn" title="Backup / restore">⇅</button>
+    <button class="icon-btn" id="editProfileBtn" title="Edit profile">✎</button>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <div class="hero-card glass">
+    <div class="hero-eyebrow" id="storageEyebrow">Stored in this browser only · export backups often</div>
+    <h1 class="hero-title" id="heroTitle">Your day-to-day SAP SD build log</h1>
+    <p class="hero-sub" id="heroSub">Every entry you add here — requirement, config, screenshots, tests, lessons, fixes — becomes something you can walk an interviewer through.</p>
+    <div class="stat-row" id="statRow"></div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-input glass" id="searchInput" placeholder="Search entries, tcodes, keywords…">
+  </div>
+
+  <div id="feedContainer"></div>
+</div>
+
+<button class="fab" id="fabAdd" title="Add today's entry">+</button>
+
+<script>
+/* ==========================================================================
+   CONFIG / DEFAULT DATA
+   ========================================================================== */
+const DEFAULT_PHASES = [
+  {id:"p1", name:"Enterprise Structure", color:"#4A6CF7"},
+  {id:"p2", name:"Master Data",          color:"#A25BF0"},
+  {id:"p3", name:"Sales Process",        color:"#FF6FA5"},
+  {id:"p4", name:"Pricing",              color:"#E0A62A"},
+  {id:"p5", name:"Delivery & Billing",   color:"#22C1A0"},
+  {id:"p6", name:"Advanced Topics",      color:"#3E7A9E"},
+  {id:"p7", name:"Consultant Deliverables", color:"#7A6FF0"}
+];
+
+let PHASES = [];
+let ENTRIES = [];
+let currentFilterPhase = "all";
+let searchQuery = "";
+let editingEntryId = null;
+let pendingImages = []; // base64 strings for the open form
+
+/* ==========================================================================
+   STORAGE HELPERS — plain browser localStorage (works on GitHub Pages,
+   Netlify, Vercel, or even opened straight from disk — no backend, no
+   account, nothing to pay for). Everything lives under the "sdlog:" prefix
+   so it never collides with anything else on the same origin.
+   ========================================================================== */
+const NS = "sdlog:";
+
+async function safeGet(key){
+  try{
+    return localStorage.getItem(NS + key); // raw string or null
+  }catch(e){ return null; }
+}
+async function safeSet(key, value){
+  try{
+    localStorage.setItem(NS + key, value);
+    return true;
+  }catch(e){
+    console.error("storage set failed", key, e);
+    if(e && e.name === "QuotaExceededError"){
+      toast("Storage is full — export a backup, then remove/shrink some screenshots.");
+    }
+    return false;
+  }
+}
+async function safeDelete(key){
+  try{ localStorage.removeItem(NS + key); return true; }
+  catch(e){ return false; }
+}
+async function safeList(prefix){
+  try{
+    const keys = [];
+    for(let i=0;i<localStorage.length;i++){
+      const full = localStorage.key(i);
+      if(full && full.startsWith(NS + prefix)) keys.push(full.slice(NS.length));
+    }
+    return keys;
+  }catch(e){ return []; }
+}
+
+function estimateStorageBytes(){
+  let total = 0;
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.startsWith(NS)) total += (k.length + (localStorage.getItem(k)||"").length);
+  }
+  return total;
+}
+
+async function tryLoadPublishedData(){
+  // Looks for a data.json sitting next to index.html in the repo. This is the
+  // file the "Publish" button below produces. If it exists, it's the public,
+  // visitor-facing content for this site.
+  try{
+    const res = await fetch("./data.json", {cache:"no-store"});
+    if(!res.ok) return null;
+    return await res.json();
+  }catch(e){ return null; }
+}
+
+async function loadAll(){
+  const keys = await safeList("entry:");
+  const hasLocalEntries = keys.length > 0;
+
+  // If THIS browser has never been used to author entries yet, prefer the
+  // published data.json (if the repo has one) so the site shows real content
+  // instead of an empty state — this covers every visitor, and also your own
+  // first visit to a fresh clone/browser.
+  if(!hasLocalEntries){
+    const published = await tryLoadPublishedData();
+    if(published){
+      if(published.profile) await safeSet("sd-profile", JSON.stringify(published.profile));
+      if(published.phases) await safeSet("sd-phases", JSON.stringify(published.phases));
+      if(Array.isArray(published.entries)){
+        for(const entry of published.entries) await safeSet("entry:" + entry.id, JSON.stringify(entry));
+      }
+    }
+  }
+
+  const profileRaw = await safeGet("sd-profile");
+  const profile = profileRaw ? JSON.parse(profileRaw) : {name:"Your Name", title:"SAP SD Consultant Portfolio", tagline:"Every entry you add here — requirement, config, screenshots, tests, lessons, fixes — becomes something you can walk an interviewer through."};
+  applyProfile(profile);
+
+  const phasesRaw = await safeGet("sd-phases");
+  PHASES = phasesRaw ? JSON.parse(phasesRaw) : DEFAULT_PHASES.slice();
+  if(!phasesRaw) await safeSet("sd-phases", JSON.stringify(PHASES));
+
+  const finalKeys = await safeList("entry:");
+  const loaded = [];
+  for(const k of finalKeys){
+    const raw = await safeGet(k);
+    if(raw){ try{ loaded.push(JSON.parse(raw)); }catch(e){} }
+  }
+  loaded.sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
+  ENTRIES = loaded;
+}
+
+function applyProfile(p){
+  document.getElementById("brandName").textContent = p.name || "SD Log";
+  document.getElementById("heroTitle").textContent = p.title || "Your day-to-day SAP SD build log";
+  document.getElementById("heroSub").textContent = p.tagline || "";
+  window.__profile = p;
+}
+
+/* ==========================================================================
+   RENDER: island tabs
+   ========================================================================== */
+function renderTabs(){
+  const tabs = document.getElementById("islandTabs");
+  const allBtn = `<button class="tab-btn ${currentFilterPhase==='all'?'active':''}" data-phase="all">All</button>`;
+  const phaseBtns = PHASES.map(p => `<button class="tab-btn ${currentFilterPhase===p.id?'active':''}" data-phase="${p.id}" style="${currentFilterPhase===p.id?`background:${p.color};box-shadow:0 4px 14px ${p.color}55;`:''}">${escapeHtml(p.name)}</button>`).join("");
+  tabs.innerHTML = allBtn + phaseBtns;
+  tabs.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => {
+    currentFilterPhase = b.dataset.phase;
+    renderTabs();
+    renderFeed();
+  }));
+}
+
+/* ==========================================================================
+   RENDER: stats
+   ========================================================================== */
+function renderStats(){
+  const total = ENTRIES.length;
+  const uniqueDates = new Set(ENTRIES.map(e => e.date)).size;
+  const phasesTouched = new Set(ENTRIES.map(e => e.phaseId)).size;
+  const withErrors = ENTRIES.filter(e => (e.errors||"").trim().length>0).length;
+  const stats = [
+    {num: total, lbl:"Entries logged"},
+    {num: uniqueDates, lbl:"Days documented"},
+    {num: `${phasesTouched}/${PHASES.length}`, lbl:"Phases started"},
+    {num: withErrors, lbl:"Debugged issues"}
+  ];
+  document.getElementById("statRow").innerHTML = stats.map(s => `
+    <div class="stat-chip glass"><div class="num">${s.num}</div><div class="lbl">${s.lbl}</div></div>
+  `).join("");
+}
+
+/* ==========================================================================
+   RENDER: feed
+   ========================================================================== */
+function phaseById(id){ return PHASES.find(p => p.id===id) || {name:"General", color:"#8892A0"}; }
+
+function matchesSearch(e){
+  if(!searchQuery) return true;
+  const hay = [e.title, e.businessReq, e.config, e.testEvidence, e.lessons, e.errors, e.tcodes].join(" ").toLowerCase();
+  return hay.includes(searchQuery.toLowerCase());
+}
+
+function renderFeed(){
+  const list = ENTRIES.filter(e => (currentFilterPhase==="all" || e.phaseId===currentFilterPhase) && matchesSearch(e));
+  const container = document.getElementById("feedContainer");
+
+  if(ENTRIES.length === 0){
+    container.innerHTML = `
+      <div class="empty-state glass" style="border-radius:24px;">
+        <div class="big">🫧</div>
+        <div style="font-family:var(--font-display); font-weight:700; font-size:18px;">Nothing logged yet</div>
+        <p>Tap the + button and add your first SAP SD topic — requirement, configuration, a screenshot, and what you learned.</p>
+      </div>`;
+    return;
+  }
+  if(list.length === 0){
+    container.innerHTML = `<div class="empty-state glass" style="border-radius:24px;"><div class="big">🔍</div><p>No entries match this filter.</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="section-title">Build log <span class="count">${list.length}</span></div>` +
+    list.map(e => {
+      const ph = phaseById(e.phaseId);
+      const imgs = (e.images||[]);
+      const thumbHtml = imgs.slice(0,4).map((src,i) => i===3 && imgs.length>4
+        ? `<div class="entry-thumb-more">+${imgs.length-3}</div>`
+        : `<img class="entry-thumb" src="${src}">`
+      ).join("");
+      return `
+      <div class="entry-card glass" data-id="${e.id}">
+        <div class="entry-top">
+          <div style="flex:1;min-width:0;">
+            <span class="entry-phase-tag" style="background:${ph.color};">${escapeHtml(ph.name)}</span>
+            <div class="entry-title">${escapeHtml(e.title||"Untitled entry")}</div>
+            <div class="entry-date">${formatDate(e.date)}${e.tcodes ? " · " + escapeHtml(e.tcodes) : ""}</div>
+            ${e.businessReq ? `<div class="entry-req-preview">${escapeHtml(truncate(e.businessReq,140))}</div>` : ""}
+            ${imgs.length ? `<div class="entry-thumbs">${thumbHtml}</div>` : ""}
+          </div>
+          <span class="chev-open">›</span>
+        </div>
+      </div>`;
+    }).join("");
+
+  container.querySelectorAll(".entry-card").forEach(card => {
+    card.addEventListener("click", () => openDetail(card.dataset.id));
+  });
+}
+
+function truncate(s,n){ return s.length>n ? s.slice(0,n).trim()+"…" : s; }
+function formatDate(d){
+  if(!d) return "";
+  const dt = new Date(d+"T00:00:00");
+  if(isNaN(dt)) return d;
+  return dt.toLocaleDateString(undefined,{month:"short", day:"numeric", year:"numeric"});
+}
+function escapeHtml(s){ return (s==null?"":String(s)).replace(/[&<>]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+/* ==========================================================================
+   DETAIL VIEW
+   ========================================================================== */
+function openDetail(id){
+  const e = ENTRIES.find(x => x.id===id);
+  if(!e) return;
+  const ph = phaseById(e.phaseId);
+  const gallery = (e.images||[]).map(src => `<img src="${src}" onclick="openLightbox('${src.replace(/'/g,"\\'")}')">`).join("");
+
+  showModal(`
+    <div class="modal-head">
+      <h2>${escapeHtml(e.title||"Untitled entry")}</h2>
+      <button class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <span class="entry-phase-tag" style="background:${ph.color};">${escapeHtml(ph.name)}</span>
+    <span class="entry-date" style="margin-left:8px;">${formatDate(e.date)}</span>
+    ${e.tcodes ? `<div style="margin-top:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--ink-soft);">T-Codes: ${escapeHtml(e.tcodes)}</div>` : ""}
+
+    ${e.businessReq ? sec("Business Requirement", e.businessReq, "#4A6CF7") : ""}
+    ${e.config ? sec("Configuration Performed", e.config, "#E0A62A") : ""}
+    ${gallery ? `<div class="detail-sub"><div class="detail-label" style="color:#5B6472;"><span class="dash" style="background:#5B6472;"></span>Screenshots</div><div class="detail-gallery">${gallery}</div></div>` : ""}
+    ${e.testEvidence ? sec("Test Evidence", e.testEvidence, "#22C1A0") : ""}
+    ${e.lessons ? sec("Lessons Learned", e.lessons, "#3E7A9E") : ""}
+    ${e.errors ? sec("Common Errors & Fixes", e.errors, "#E0563F") : ""}
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="openForm('${e.id}')">Edit entry</button>
+      <button class="btn btn-danger-ghost" onclick="deleteEntry('${e.id}')">Delete</button>
+    </div>
+  `);
+}
+function sec(label, text, color){
+  return `<div class="detail-sub">
+    <div class="detail-label" style="color:${color};"><span class="dash" style="background:${color};"></span>${label}</div>
+    <div class="detail-text">${escapeHtml(text)}</div>
+  </div>`;
+}
+
+function openLightbox(src){
+  const lb = document.createElement("div");
+  lb.className = "lightbox";
+  lb.innerHTML = `<button class="lightbox-close">✕</button><img src="${src}">`;
+  lb.addEventListener("click", (ev) => { if(ev.target===lb || ev.target.classList.contains("lightbox-close")) lb.remove(); });
+  document.body.appendChild(lb);
+}
+window.openLightbox = openLightbox;
+
+/* ==========================================================================
+   FORM (add / edit)
+   ========================================================================== */
+function openForm(existingId){
+  editingEntryId = existingId || null;
+  const e = editingEntryId ? ENTRIES.find(x=>x.id===editingEntryId) : null;
+  pendingImages = e ? (e.images||[]).slice() : [];
+
+  const phaseOpts = PHASES.map(p => `<div class="phase-chip-opt ${e&&e.phaseId===p.id ? 'selected':''}" data-phase="${p.id}" style="background:${p.color};">${escapeHtml(p.name)}</div>`).join("");
+
+  showModal(`
+    <div class="modal-head">
+      <h2>${e ? "Edit entry" : "Log today's progress"}</h2>
+      <button class="icon-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="field">
+      <label>Phase / Topic Area</label>
+      <div class="phase-picker" id="phasePicker">${phaseOpts}</div>
+      <div class="field-hint">Tap to select. <span id="addPhaseLink" style="text-decoration:underline;cursor:pointer;">+ add a new phase</span></div>
+    </div>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="fTitle" placeholder="e.g. Configured Pricing Procedure Determination" value="${e ? escapeHtml(e.title) : ""}">
+    </div>
+    <div class="field" style="display:flex; gap:12px;">
+      <div style="flex:1;">
+        <label>Date</label>
+        <input type="date" id="fDate" value="${e ? e.date : new Date().toISOString().slice(0,10)}">
+      </div>
+      <div style="flex:1;">
+        <label>T-Codes (optional)</label>
+        <input type="text" id="fTcodes" placeholder="VOV8, VK11…" value="${e ? escapeHtml(e.tcodes||"") : ""}">
+      </div>
+    </div>
+    <div class="field">
+      <label>Business Requirement</label>
+      <textarea id="fReq" placeholder="What did the business ask for?">${e ? escapeHtml(e.businessReq||"") : ""}</textarea>
+    </div>
+    <div class="field">
+      <label>Configuration Performed</label>
+      <textarea id="fConfig" placeholder="Steps you took, IMG paths, settings changed…">${e ? escapeHtml(e.config||"") : ""}</textarea>
+    </div>
+    <div class="field">
+      <label>Screenshots</label>
+      <div class="upload-zone" id="uploadZone">
+        <div style="font-size:22px;">📎</div>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;">Tap to upload screenshots (auto-compressed to keep this browser's storage happy)</div>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </div>
+      <div class="img-preview-row" id="imgPreviewRow"></div>
+    </div>
+    <div class="field">
+      <label>Test Evidence</label>
+      <textarea id="fTest" placeholder="What did you test, and what happened?">${e ? escapeHtml(e.testEvidence||"") : ""}</textarea>
+    </div>
+    <div class="field">
+      <label>Lessons Learned</label>
+      <textarea id="fLessons" placeholder="What would you tell yourself next time?">${e ? escapeHtml(e.lessons||"") : ""}</textarea>
+    </div>
+    <div class="field">
+      <label>Common Errors & How You Fixed Them</label>
+      <textarea id="fErrors" placeholder="Error → root cause → fix">${e ? escapeHtml(e.errors||"") : ""}</textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="saveEntryBtn">${e ? "Save changes" : "Save entry"}</button>
+    </div>
+  `);
+
+  let selectedPhase = e ? e.phaseId : (PHASES[0] && PHASES[0].id);
+  document.getElementById("phasePicker").addEventListener("click", (ev) => {
+    const chip = ev.target.closest(".phase-chip-opt");
+    if(!chip) return;
+    selectedPhase = chip.dataset.phase;
+    document.querySelectorAll(".phase-chip-opt").forEach(c => c.classList.toggle("selected", c===chip));
+  });
+  document.getElementById("addPhaseLink").addEventListener("click", async () => {
+    const name = prompt("New phase / topic area name:");
+    if(!name) return;
+    const palette = ["#4A6CF7","#A25BF0","#FF6FA5","#E0A62A","#22C1A0","#3E7A9E","#7A6FF0","#D96C4F"];
+    const color = palette[PHASES.length % palette.length];
+    const newPhase = {id:"p"+Date.now(), name, color};
+    PHASES.push(newPhase);
+    await safeSet("sd-phases", JSON.stringify(PHASES));
+    renderTabs();
+    openForm(editingEntryId); // re-render form with new phase available
+  });
+
+  renderImgPreviews();
+  document.getElementById("uploadZone").addEventListener("click", () => document.getElementById("fileInput").click());
+  document.getElementById("fileInput").addEventListener("change", handleFileSelect);
+
+  document.getElementById("saveEntryBtn").addEventListener("click", async () => {
+    const title = document.getElementById("fTitle").value.trim();
+    if(!title){ toast("Give the entry a title first"); return; }
+    const btn = document.getElementById("saveEntryBtn");
+    btn.disabled = true; btn.textContent = "Saving…";
+
+    const entry = {
+      id: editingEntryId || ("e" + Date.now()),
+      phaseId: selectedPhase,
+      title,
+      date: document.getElementById("fDate").value || new Date().toISOString().slice(0,10),
+      tcodes: document.getElementById("fTcodes").value.trim(),
+      businessReq: document.getElementById("fReq").value.trim(),
+      config: document.getElementById("fConfig").value.trim(),
+      testEvidence: document.getElementById("fTest").value.trim(),
+      lessons: document.getElementById("fLessons").value.trim(),
+      errors: document.getElementById("fErrors").value.trim(),
+      images: pendingImages.slice(),
+      createdAt: (editingEntryId && e && e.createdAt) || Date.now()
+    };
+    const ok = await safeSet("entry:" + entry.id, JSON.stringify(entry));
+    btn.disabled = false;
+    if(!ok){ toast("Save failed — try again"); return; }
+
+    const idx = ENTRIES.findIndex(x => x.id===entry.id);
+    if(idx>=0) ENTRIES[idx] = entry; else ENTRIES.unshift(entry);
+    ENTRIES.sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
+
+    closeModal();
+    renderStats(); renderTabs(); renderFeed();
+    toast(editingEntryId ? "Entry updated" : "Entry saved");
+  });
+}
+window.openForm = openForm;
+
+function renderImgPreviews(){
+  const row = document.getElementById("imgPreviewRow");
+  if(!row) return;
+  row.innerHTML = pendingImages.map((src,i) => `
+    <div class="img-preview"><img src="${src}"><button class="rm" data-i="${i}">✕</button></div>
+  `).join("");
+  row.querySelectorAll(".rm").forEach(b => b.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    pendingImages.splice(parseInt(b.dataset.i),1);
+    renderImgPreviews();
+  }));
+}
+
+function handleFileSelect(ev){
+  const files = Array.from(ev.target.files || []);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 820;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.62);
+        pendingImages.push(dataUrl);
+        renderImgPreviews();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  ev.target.value = "";
+}
+
+async function deleteEntry(id){
+  if(!confirm("Delete this entry? This can't be undone.")) return;
+  await safeDelete("entry:" + id);
+  ENTRIES = ENTRIES.filter(e => e.id!==id);
+  closeModal();
+  renderStats(); renderFeed();
+  toast("Entry deleted");
+}
+window.deleteEntry = deleteEntry;
+
+/* ==========================================================================
+   PROFILE EDIT
+   ========================================================================== */
+function openProfileForm(){
+  const p = window.__profile || {};
+  showModal(`
+    <div class="modal-head"><h2>Edit profile</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Your name</label><input type="text" id="pName" value="${escapeHtml(p.name||"")}"></div>
+    <div class="field"><label>Headline</label><input type="text" id="pTitle" value="${escapeHtml(p.title||"")}"></div>
+    <div class="field"><label>Tagline</label><textarea id="pTagline">${escapeHtml(p.tagline||"")}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="saveProfileBtn">Save</button>
+    </div>
+  `);
+  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+    const profile = {
+      name: document.getElementById("pName").value.trim() || "Your Name",
+      title: document.getElementById("pTitle").value.trim(),
+      tagline: document.getElementById("pTagline").value.trim()
+    };
+    await safeSet("sd-profile", JSON.stringify(profile));
+    applyProfile(profile);
+    closeModal();
+    toast("Profile updated");
+  });
+}
+
+/* ==========================================================================
+   BACKUP / RESTORE — localStorage is per-browser, per-device. This is the
+   sync mechanism: export a JSON snapshot (commit it into your repo under
+   /backups if you want version history), and import it on any other
+   browser/device to restore everything.
+   ========================================================================== */
+function openBackupModal(){
+  const bytes = estimateStorageBytes();
+  const kb = (bytes/1024).toFixed(1);
+  showModal(`
+    <div class="modal-head"><h2>Backup &amp; restore</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;">
+      Everything is saved in <strong>this browser only</strong> (localStorage). It will not
+      follow you to another browser, device, or a fresh clone of the repo. Export a backup
+      regularly — you can even commit the file into a <code>/backups</code> folder in your repo
+      for version history — and import it to restore on any device.
+    </p>
+    <div class="stat-chip glass" style="margin:14px 0;">
+      <div class="num">${kb} KB</div>
+      <div class="lbl">currently stored in this browser</div>
+    </div>
+    <div class="modal-actions" style="flex-direction:column;gap:10px;">
+      <button class="btn btn-primary" id="publishBtn">🌐 Publish (download data.json)</button>
+      <div style="font-size:12px;color:var(--ink-soft);line-height:1.5;">
+        Downloads as <code>data.json</code>. Drop it into your repo's root folder
+        (replacing the old one) and push — that's what makes your site show real
+        content to visitors instead of an empty page.
+      </div>
+      <button class="btn" id="exportBtn" style="margin-top:6px;">⬇ Export dated backup (.json)</button>
+    </div>
+    <div class="field" style="margin-top:18px;">
+      <label>Restore from a backup file</label>
+      <div class="upload-zone" id="importZone">
+        <div style="font-size:22px;">📂</div>
+        <div style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;">Tap to choose a .json backup — this replaces everything currently in this browser</div>
+        <input type="file" id="importInput" accept="application/json">
+      </div>
+    </div>
+  `);
+  document.getElementById("publishBtn").addEventListener("click", publishData);
+  document.getElementById("exportBtn").addEventListener("click", exportBackup);
+  document.getElementById("importZone").addEventListener("click", () => document.getElementById("importInput").click());
+  document.getElementById("importInput").addEventListener("change", importBackup);
+}
+
+function downloadJson(payload, filename){
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function publishData(){
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    profile: window.__profile || {},
+    phases: PHASES,
+    entries: ENTRIES
+  };
+  downloadJson(payload, "data.json");
+  toast("data.json downloaded — replace it in your repo and push");
+}
+
+async function exportBackup(){
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    profile: window.__profile || {},
+    phases: PHASES,
+    entries: ENTRIES
+  };
+  downloadJson(payload, `sd-log-backup-${new Date().toISOString().slice(0,10)}.json`);
+  toast("Backup downloaded");
+}
+
+function importBackup(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  if(!confirm("This will replace everything currently stored in this browser. Continue?")) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try{
+      const data = JSON.parse(e.target.result);
+      if(data.profile){ await safeSet("sd-profile", JSON.stringify(data.profile)); applyProfile(data.profile); }
+      if(data.phases){ PHASES = data.phases; await safeSet("sd-phases", JSON.stringify(PHASES)); }
+      if(Array.isArray(data.entries)){
+        // clear existing entries first
+        const existingKeys = await safeList("entry:");
+        for(const k of existingKeys) await safeDelete(k);
+        for(const entry of data.entries) await safeSet("entry:" + entry.id, JSON.stringify(entry));
+        ENTRIES = data.entries.slice().sort((a,b) => (b.date||"").localeCompare(a.date||"") || (b.createdAt||0)-(a.createdAt||0));
+      }
+      closeModal();
+      renderStats(); renderTabs(); renderFeed();
+      toast("Backup restored");
+    }catch(err){
+      toast("That file doesn't look like a valid backup");
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ==========================================================================
+   MODAL / TOAST plumbing
+   ========================================================================== */
+function showModal(innerHtml){
+  closeModal();
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "activeModalOverlay";
+  overlay.innerHTML = `<div class="modal glass-strong">${innerHtml}</div>`;
+  overlay.addEventListener("click", (ev) => { if(ev.target===overlay) closeModal(); });
+  document.body.appendChild(overlay);
+}
+function closeModal(){
+  const el = document.getElementById("activeModalOverlay");
+  if(el) el.remove();
+}
+window.closeModal = closeModal;
+
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+/* ==========================================================================
+   INIT
+   ========================================================================== */
+document.getElementById("fabAdd").addEventListener("click", () => openForm(null));
+document.getElementById("editProfileBtn").addEventListener("click", openProfileForm);
+document.getElementById("backupBtn").addEventListener("click", openBackupModal);
+document.getElementById("searchInput").addEventListener("input", (ev) => {
+  searchQuery = ev.target.value;
+  renderFeed();
+});
+window.addEventListener("scroll", () => {
+  document.getElementById("island").classList.toggle("shrunk", window.scrollY > 40);
+});
+
+(async function init(){
+  await loadAll();
+  renderStats();
+  renderTabs();
+  renderFeed();
+  document.getElementById("loadingVeil").style.display = "none";
+})();
+</script>
+</body>
+</html>
