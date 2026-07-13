@@ -24,24 +24,29 @@
        history, and use "Restore" to load it on another browser/device.
   ============================================================================
 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --glass: rgba(255,255,255,0.55);
-    --glass-strong: rgba(255,255,255,0.72);
-    --glass-border: rgba(255,255,255,0.75);
-    --ink: #1B2130;
-    --ink-soft: #5B6472;
-    --ink-faint: #93A0B2;
+    --glass: rgba(255,255,255,0.06);
+    --glass-strong: rgba(255,255,255,0.10);
+    --glass-border: rgba(255,255,255,0.12);
+    --ink: #F4F5F7;
+    --ink-soft: #9A9DA6;
+    --ink-faint: #64666F;
     --accent: #4A6CF7;
     --accent-2: #A25BF0;
     --accent-3: #FF6FA5;
     --accent-4: #22C1A0;
-    --danger: #E0563F;
+    --danger: #FF5C4D;
+    --bg: #060607;
+    --bg-elevated: #0E0E10;
     --radius-lg: 28px;
     --radius-md: 18px;
     --radius-sm: 12px;
-    --font-display: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
-    --font-body: -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+    --font-display: 'Space Grotesk', -apple-system, 'SF Pro Display', system-ui, sans-serif;
+    --font-body: 'Manrope', -apple-system, 'SF Pro Text', system-ui, sans-serif;
     --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
   }
   *{box-sizing:border-box;}
@@ -50,7 +55,7 @@
     margin:0;
     font-family:var(--font-body);
     color:var(--ink);
-    background: #EEF1F8;
+    background: var(--bg);
     overflow-x:hidden;
     -webkit-font-smoothing:antialiased;
   }
@@ -58,7 +63,7 @@
   /* ---------------- Liquid background ---------------- */
   .bg-scene{
     position:fixed; inset:0; z-index:-1; overflow:hidden;
-    background: linear-gradient(180deg,#F3F5FB 0%, #EAEEF9 60%, #E7ECF7 100%);
+    background: linear-gradient(180deg,#060607 0%, #0A0A0C 60%, #0E0E10 100%);
   }
   .blob{
     position:absolute; border-radius:50%;
@@ -89,14 +94,14 @@
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px rgba(31,41,66,0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
   }
   .glass-strong{
     background: var(--glass-strong);
     backdrop-filter: blur(30px) saturate(200%);
     -webkit-backdrop-filter: blur(30px) saturate(200%);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 12px 40px rgba(31,41,66,0.14), inset 0 1px 0 rgba(255,255,255,0.7);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
   }
 
   /* ---------------- Top island nav ---------------- */
@@ -145,7 +150,7 @@
     white-space:nowrap;
     transition: background .2s, color .2s;
   }
-  .tab-btn:hover{ background: rgba(255,255,255,0.5); }
+  .tab-btn:hover{ background: rgba(255,255,255,0.08); }
   .tab-btn.active{
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     color:#fff;
@@ -155,10 +160,10 @@
     flex:none;
     width:36px; height:36px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    border:none; cursor:pointer; background: rgba(255,255,255,0.5);
+    border:none; cursor:pointer; background: rgba(255,255,255,0.07);
     color:var(--ink-soft); font-size:15px;
   }
-  .icon-btn:hover{ background: rgba(255,255,255,0.8); color:var(--ink); }
+  .icon-btn:hover{ background: rgba(255,255,255,0.14); color:var(--ink); }
 
   /* ---------------- Layout ---------------- */
   .wrap{ max-width: 980px; margin: 0 auto; padding: 22px 16px 140px; }
@@ -185,17 +190,17 @@
     border-radius: var(--radius-sm);
     padding: 12px 16px;
     min-width:110px;
-    background: rgba(255,255,255,0.5);
-    border: 1px solid rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
   }
   .stat-chip .num{ font-family:var(--font-display); font-weight:700; font-size:22px; }
   .stat-chip .lbl{ font-size:11px; color:var(--ink-soft); margin-top:2px; }
 
   .search-row{ display:flex; gap:10px; margin-bottom:18px; }
   .search-input{
-    flex:1; border-radius: 999px; border:1px solid rgba(255,255,255,0.8);
+    flex:1; border-radius: 999px; border:1px solid rgba(255,255,255,0.12);
     padding: 12px 18px; font-size:13.5px; font-family:var(--font-body);
-    background: rgba(255,255,255,0.55); backdrop-filter: blur(16px);
+    background: rgba(255,255,255,0.06); backdrop-filter: blur(16px);
     color: var(--ink);
   }
   .search-input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
@@ -207,7 +212,7 @@
   }
   .section-title .count{
     font-family: var(--font-mono); font-size:11px; color:var(--ink-soft);
-    background: rgba(255,255,255,0.6); padding:2px 9px; border-radius:999px;
+    background: rgba(255,255,255,0.08); padding:2px 9px; border-radius:999px;
   }
 
   /* ---------------- Entry cards ---------------- */
@@ -228,10 +233,10 @@
   .entry-date{ font-family: var(--font-mono); font-size:11px; color: var(--ink-faint); }
   .entry-req-preview{ font-size:13px; color: var(--ink-soft); margin-top:8px; line-height:1.5; }
   .entry-thumbs{ display:flex; gap:6px; margin-top:12px; }
-  .entry-thumb{ width:46px; height:46px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.8); }
+  .entry-thumb{ width:46px; height:46px; border-radius:9px; object-fit:cover; border:1px solid rgba(255,255,255,0.12); }
   .entry-thumb-more{
     width:46px; height:46px; border-radius:9px; display:flex; align-items:center; justify-content:center;
-    background: rgba(0,0,0,0.06); font-size:11px; font-weight:700; color:var(--ink-soft);
+    background: rgba(255,255,255,0.08); font-size:11px; font-weight:700; color:var(--ink-soft);
   }
   .chev-open{ color:var(--ink-faint); font-size:20px; }
 
@@ -248,14 +253,14 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
     color:#fff; border:none; cursor:pointer;
     font-size:26px; display:flex; align-items:center; justify-content:center;
-    box-shadow: 0 10px 30px rgba(74,108,247,0.45), inset 0 1px 0 rgba(255,255,255,0.4);
+    box-shadow: 0 10px 30px rgba(74,108,247,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
     transition: transform .18s ease;
   }
   .fab:hover{ transform: scale(1.06) rotate(90deg); }
 
   /* ---------------- Modal ---------------- */
   .modal-overlay{
-    position:fixed; inset:0; background: rgba(20,24,38,0.35);
+    position:fixed; inset:0; background: rgba(0,0,0,0.7);
     backdrop-filter: blur(6px);
     z-index:100; display:flex; align-items:flex-end; justify-content:center;
     animation: fadeIn .2s ease;
@@ -280,8 +285,8 @@
     color: var(--ink-soft); font-weight:700; margin-bottom:6px;
   }
   .field input[type="text"], .field input[type="date"], .field textarea, .field select{
-    width:100%; padding: 11px 14px; border-radius: 13px; border:1px solid rgba(0,0,0,0.08);
-    background: rgba(255,255,255,0.7); font-family: var(--font-body); font-size:13.5px; color: var(--ink);
+    width:100%; padding: 11px 14px; border-radius: 13px; border:1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.05); font-family: var(--font-body); font-size:13.5px; color: var(--ink);
     resize: vertical;
   }
   .field textarea{ min-height:70px; line-height:1.5; }
@@ -293,18 +298,18 @@
     padding:8px 13px; border-radius:999px; font-size:12px; font-weight:600; cursor:pointer;
     border: 1.5px solid transparent; color:#fff;
   }
-  .phase-chip-opt.selected{ box-shadow: 0 0 0 2.5px rgba(0,0,0,0.18) inset; }
+  .phase-chip-opt.selected{ box-shadow: 0 0 0 2.5px rgba(255,255,255,0.35) inset; }
 
   .upload-zone{
-    border: 1.6px dashed rgba(0,0,0,0.16); border-radius: 16px;
+    border: 1.6px dashed rgba(255,255,255,0.18); border-radius: 16px;
     padding: 18px; text-align:center; cursor:pointer;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.03);
   }
-  .upload-zone:hover{ background: rgba(255,255,255,0.65); }
+  .upload-zone:hover{ background: rgba(255,255,255,0.07); }
   .upload-zone input{ display:none; }
   .img-preview-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
   .img-preview{ position:relative; width:64px; height:64px; }
-  .img-preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; border:1px solid rgba(0,0,0,0.08); }
+  .img-preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; border:1px solid rgba(255,255,255,0.10); }
   .img-preview .rm{
     position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%;
     background: var(--danger); color:#fff; border:none; font-size:11px; cursor:pointer; line-height:1;
@@ -317,7 +322,7 @@
   }
   .btn-primary{ background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff; flex:1; }
   .btn-primary:disabled{ opacity:.5; cursor:not-allowed; }
-  .btn-ghost{ background: rgba(0,0,0,0.06); color: var(--ink-soft); }
+  .btn-ghost{ background: rgba(255,255,255,0.08); color: var(--ink-soft); }
   .btn-danger-ghost{ background: rgba(224,86,63,0.1); color: var(--danger); }
 
   /* ---------------- Detail viewer ---------------- */
@@ -329,7 +334,7 @@
   .detail-label .dash{ width:16px; height:2px; display:inline-block; }
   .detail-text{ font-size:14px; line-height:1.6; color:var(--ink); white-space:pre-wrap; }
   .detail-gallery{ display:grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap:8px; }
-  .detail-gallery img{ width:100%; height:100px; object-fit:cover; border-radius:12px; cursor:zoom-in; border:1px solid rgba(0,0,0,0.06); }
+  .detail-gallery img{ width:100%; height:100px; object-fit:cover; border-radius:12px; cursor:zoom-in; border:1px solid rgba(255,255,255,0.10); }
 
   .lightbox{
     position:fixed; inset:0; background:rgba(10,12,20,0.85); z-index:200;
@@ -350,7 +355,7 @@
   @keyframes toastIn{ from{opacity:0; transform:translate(-50%,10px);} to{opacity:1; transform:translate(-50%,0);} }
 
   .loading-veil{
-    position:fixed; inset:0; background:#EEF1F8; z-index:500;
+    position:fixed; inset:0; background:#060607; z-index:500;
     display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px;
   }
   .spinner{
@@ -361,7 +366,7 @@
   @keyframes spin{ to{ transform: rotate(360deg);} }
 
   ::-webkit-scrollbar{ width:8px; }
-  ::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.15); border-radius:8px; }
+  ::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.15); border-radius:8px; }
 </style>
 </head>
 <body>
@@ -1024,6 +1029,27 @@ function toast(msg){
 document.getElementById("fabAdd").addEventListener("click", () => openForm(null));
 document.getElementById("editProfileBtn").addEventListener("click", openProfileForm);
 document.getElementById("backupBtn").addEventListener("click", openBackupModal);
+
+/* ==========================================================================
+   EDIT MODE — the "+", edit-profile pencil, and backup/publish buttons only
+   ever appear when you're authoring locally (opened as a file, or via
+   localhost), or when you deliberately add ?edit=1 to the URL. On the plain
+   public GitHub Pages link, visitors get a clean read-only view with no
+   controls that could look editable, even though nothing they'd click could
+   ever change your real published site anyway (edits only ever save to
+   *their own* browser).
+   ========================================================================== */
+const EDIT_MODE = (
+  location.protocol === "file:" ||
+  location.hostname === "localhost" ||
+  location.hostname === "127.0.0.1" ||
+  new URLSearchParams(location.search).get("edit") === "1"
+);
+if(!EDIT_MODE){
+  document.getElementById("fabAdd").style.display = "none";
+  document.getElementById("editProfileBtn").style.display = "none";
+  document.getElementById("backupBtn").style.display = "none";
+}
 document.getElementById("searchInput").addEventListener("input", (ev) => {
   searchQuery = ev.target.value;
   renderFeed();
