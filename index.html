@@ -78,7 +78,9 @@
     display:flex; flex-direction:column; overflow-y:auto; z-index:40;
   }
   .sidebar-brand{ padding:20px 18px 12px; display:flex; align-items:center; gap:10px; }
-  .sidebar-brand .dot{ width:32px;height:32px;border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex;align-items:center;justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:12px; }
+  .sidebar-brand .dot{ width:32px;height:32px;border-radius:9px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex;align-items:center;justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:12px; overflow:hidden; flex-shrink:0; }
+  .sidebar-brand .dot img{ width:100%; height:100%; object-fit:cover; }
+  .sidebar-brand .dot.editable{ cursor:pointer; }
   .sidebar-brand .who{ font-family:var(--font-display); font-weight:700; font-size:14.5px; line-height:1.25; }
   .sidebar-brand .sub{ font-size:10.5px; color:var(--ink-faint); }
   .sidebar-header{ padding:14px 18px 6px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); }
@@ -103,8 +105,10 @@
   .sb-children{ overflow:hidden; }
   .sb-add-root{ margin:10px 18px 6px; font-size:12px; padding:8px 10px; }
 
-  .sidebar-toggle{ display:none; }
+  .sidebar-toggle{ display:flex; }
   .sidebar-backdrop{ display:none; }
+  body.sidebar-collapsed .sidebar{ width:0; border:none; opacity:0; pointer-events:none; }
+  .sidebar{ transition: width .22s ease, opacity .18s ease, transform .25s ease; }
 
   @media (max-width: 860px){
     .sidebar{ position:fixed; left:0; top:0; height:100vh; transform:translateX(-100%); transition:transform .25s ease; box-shadow:0 0 40px rgba(0,0,0,0.5); }
@@ -211,6 +215,34 @@
   .cloud-chip .x:hover{ color:var(--danger); }
   .add-chip-input{ padding:7px 13px; border-radius:999px; border:1px dashed var(--glass-border); background:transparent; color:var(--ink); font-size:12.5px; width:150px; }
 
+  /* ---------------- Star ratings ---------------- */
+  .star-row{ display:inline-flex; gap:1px; margin-left:2px; }
+  .star{ font-size:13px; color:var(--ink-faint); cursor:default; }
+  .star.filled{ color:#E0A62A; }
+  .star.editable{ cursor:pointer; }
+  .star.editable:hover{ transform:scale(1.15); }
+
+  /* ---------------- Section headers (add/rename/delete) ---------------- */
+  .sec-header-row{ display:flex; align-items:center; gap:8px; margin:26px 0 12px; }
+  .sec-header-row .section-title{ margin:0; flex:1; }
+  .sec-tools{ display:flex; gap:4px; }
+  .sec-tool-btn{ width:26px;height:26px; border-radius:7px; border:none; background:rgba(255,255,255,0.07); color:var(--ink-faint); font-size:11px; cursor:pointer; }
+  .sec-tool-btn:hover{ background:rgba(255,255,255,0.14); color:var(--ink); }
+  .sec-tool-btn.danger:hover{ background:rgba(255,92,77,0.18); color:var(--danger); }
+  .add-section-bar{ display:flex; gap:10px; margin-top:24px; }
+
+  /* ---------------- Profile photo + contact ---------------- */
+  .avatar-lg{ width:76px;height:76px; border-radius:20px; overflow:hidden; background:linear-gradient(135deg,var(--accent),var(--accent-2)); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:26px; flex-shrink:0; }
+  .avatar-lg img{ width:100%; height:100%; object-fit:cover; }
+  .hero-top-row{ display:flex; gap:18px; align-items:flex-start; }
+  .avatar-controls{ display:flex; gap:8px; margin-top:8px; }
+  .contact-row{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .contact-row input{ flex:1; }
+  .contact-link-chip{ padding:7px 13px; border-radius:999px; background:rgba(74,108,247,0.12); border:1px solid rgba(74,108,247,0.3); font-size:12.5px; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:6px; }
+  .stats-strip{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .stat-pill{ padding:8px 14px; border-radius:12px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); font-size:12px; color:var(--ink-soft); }
+  .stat-pill b{ color:var(--ink); font-family:var(--font-mono); }
+
   /* ---------------- Modal / toast ---------------- */
   .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; display:flex; align-items:flex-end; justify-content:center; }
   @media (min-width:700px){ .modal-overlay{ align-items:center; } }
@@ -257,13 +289,7 @@
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <div class="app-shell">
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="dot" id="sbInitials">SZ</div>
-      <div>
-        <div class="who" id="sbName">Shaik Zaheer Abbas</div>
-        <div class="sub">SAP Learning Log</div>
-      </div>
-    </div>
+    <div class="sidebar-brand" id="sidebarBrand"></div>
     <div class="sb-row" id="homeRow" data-view="home" style="margin:4px 8px;">
       <span style="width:14px;"></span><span class="sb-label">🏠 Home</span>
     </div>
@@ -336,12 +362,24 @@ const DEFAULT_HOME = {
   name: "Shaik Zaheer Abbas",
   headline: "SAP SD Functional Consultant",
   about: "SAP SD Functional Consultant with around 1.5 years of hands-on experience on a live production support project (Cutera Inc., US), running RISE with SAP S/4HANA 2020 and 2023. Currently deepening expertise toward a senior functional consultant level across SD, MM, FI, and cross-module integration areas, and preparing for the SAP SD certification exam C_TS462_2023.",
-  experience: [
-    {role:"SAP SD Functional Consultant", company:"Cutera Inc. — Production Support (RISE with SAP S/4HANA)", period:"~1.5 years", description:"Order-to-cash support, pricing procedure configuration, billing, credit management, shipping & ATP, and SD-FI / SD-MM cross-module integration on a live S/4HANA 2020 & 2023 landscape."}
-  ],
-  skills: ["SAP SD","Pricing Procedures","Credit Management","Shipping & ATP","SD-FI Integration","SD-MM Integration","Fiori Apps","IDoc Monitoring","LSMW / LTMC"],
-  certifications: ["Preparing for C_TS462_2023 — SAP S/4HANA Sales"],
-  interests: ["Audio gear & IEMs","Technical writing & LinkedIn knowledge-sharing"]
+  photo: null,
+  contact: [],
+  sections: [
+    {id:"experience", title:"Experience", type:"timeline", items:[
+      {role:"SAP SD Functional Consultant", company:"Cutera Inc. — Production Support (RISE with SAP S/4HANA)", period:"~1.5 years", description:"Order-to-cash support, pricing procedure configuration, billing, credit management, shipping & ATP, and SD-FI / SD-MM cross-module integration on a live S/4HANA 2020 & 2023 landscape."}
+    ]},
+    {id:"skills", title:"Skills", type:"chips", showRating:true, items:[
+      {name:"SAP SD", rating:4},{name:"Pricing Procedures", rating:4},{name:"Credit Management", rating:3},
+      {name:"Shipping & ATP", rating:3},{name:"SD-FI Integration", rating:3},{name:"SD-MM Integration", rating:3},
+      {name:"Fiori Apps", rating:3},{name:"IDoc Monitoring", rating:2},{name:"LSMW / LTMC", rating:2}
+    ]},
+    {id:"certifications", title:"Certifications", type:"chips", showRating:false, items:[
+      {name:"Preparing for C_TS462_2023 — SAP S/4HANA Sales"}
+    ]},
+    {id:"interests", title:"Interests", type:"chips", showRating:false, items:[
+      {name:"Audio gear & IEMs"},{name:"Technical writing & LinkedIn knowledge-sharing"}
+    ]}
+  ]
 };
 
 /* ==========================================================================
@@ -401,7 +439,18 @@ async function loadAll(){
 
   const homeRaw = await safeGet("sd-home");
   HOME = homeRaw ? JSON.parse(homeRaw) : JSON.parse(JSON.stringify(DEFAULT_HOME));
-  if(!homeRaw) await safeSet("sd-home", JSON.stringify(HOME));
+  if(!HOME.sections){
+    HOME.sections = [
+      {id:"experience", title:"Experience", type:"timeline", items: HOME.experience || []},
+      {id:"skills", title:"Skills", type:"chips", showRating:true, items:(HOME.skills||[]).map(name=>({name, rating:0}))},
+      {id:"certifications", title:"Certifications", type:"chips", showRating:false, items:(HOME.certifications||[]).map(name=>({name}))},
+      {id:"interests", title:"Interests", type:"chips", showRating:false, items:(HOME.interests||[]).map(name=>({name}))}
+    ];
+    delete HOME.experience; delete HOME.skills; delete HOME.certifications; delete HOME.interests;
+  }
+  if(HOME.photo===undefined) HOME.photo = null;
+  if(!HOME.contact) HOME.contact = [];
+  await safeSet("sd-home", JSON.stringify(HOME));
 
   const modRaw = await safeGet("sd-modules");
   if(modRaw){
@@ -604,11 +653,15 @@ document.getElementById("addModuleBtn").addEventListener("click", async () => {
 });
 document.getElementById("homeRow").addEventListener("click", () => { selection = {type:"home"}; closeSidebarMobile(); renderMain(); renderSidebar(); });
 
-/* mobile sidebar toggle */
+/* sidebar toggle — works on desktop (collapses width) and mobile (slide-in drawer) */
 function closeSidebarMobile(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("sidebarBackdrop").classList.remove("show"); }
 document.getElementById("sidebarToggle").addEventListener("click", () => {
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("sidebarBackdrop").classList.toggle("show");
+  if(window.innerWidth <= 860){
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("sidebarBackdrop").classList.toggle("show");
+  } else {
+    document.body.classList.toggle("sidebar-collapsed");
+  }
 });
 document.getElementById("sidebarBackdrop").addEventListener("click", closeSidebarMobile);
 
@@ -625,88 +678,287 @@ function renderMain(){
 }
 
 /* ---------------- HOME / RESUME VIEW ---------------- */
+function starRow(rating, sectionId, itemIndex){
+  let out = `<span class="star-row">`;
+  for(let i=1;i<=5;i++){
+    const filled = i<=(rating||0);
+    out += `<span class="star ${filled?'filled':''} ${EDIT_MODE?'editable':''}" ${EDIT_MODE?`data-star-sec="${sectionId}" data-star-item="${itemIndex}" data-star-val="${i}"`:""}>★</span>`;
+  }
+  return out + `</span>`;
+}
+
+function renderSectionHtml(sec, idx){
+  const tools = EDIT_MODE ? `
+    <div class="sec-tools">
+      ${sec.type==="chips" ? `<button class="sec-tool-btn" data-toggle-rating="${sec.id}" title="Toggle star ratings">${sec.showRating?'★':'☆'}</button>` : ""}
+      <button class="sec-tool-btn danger" data-delete-section="${sec.id}" title="Delete section">🗑</button>
+    </div>` : "";
+
+  let body = "";
+  if(sec.type==="timeline"){
+    const items = sec.items.map((x,i) => `
+      <div class="tl-item">
+        <div class="tl-role" contenteditable="${EDIT_MODE}" data-sec="${sec.id}" data-item="${i}" data-field="role">${escapeHtml(x.role)}</div>
+        <div class="tl-company" contenteditable="${EDIT_MODE}" data-sec="${sec.id}" data-item="${i}" data-field="company">${escapeHtml(x.company)}</div>
+        <div class="tl-period" contenteditable="${EDIT_MODE}" data-sec="${sec.id}" data-item="${i}" data-field="period">${escapeHtml(x.period)}</div>
+        <div class="tl-desc" contenteditable="${EDIT_MODE}" data-sec="${sec.id}" data-item="${i}" data-field="description">${escapeHtml(x.description)}</div>
+        ${EDIT_MODE ? `<button class="btn btn-danger-ghost btn-sm tl-remove" data-remove-item="${sec.id}" data-item-i="${i}">Remove</button>` : ""}
+      </div>`).join("");
+    body = `<div class="timeline">${items || '<div style="color:var(--ink-faint);font-size:13px;">Nothing here yet.</div>'}</div>
+      ${EDIT_MODE ? `<button class="btn btn-ghost btn-sm" data-add-timeline-item="${sec.id}" style="margin-top:8px;">+ Add item</button>` : ""}`;
+  } else {
+    const chips = sec.items.map((x,i) => `
+      <div class="cloud-chip">
+        <span contenteditable="${EDIT_MODE}" data-sec="${sec.id}" data-item="${i}" data-field="name">${escapeHtml(x.name)}</span>
+        ${sec.showRating ? starRow(x.rating, sec.id, i) : ""}
+        ${EDIT_MODE ? `<span class="x" data-remove-item="${sec.id}" data-item-i="${i}">✕</span>` : ""}
+      </div>`).join("");
+    body = `<div class="chip-cloud">${chips}${EDIT_MODE?`<input class="add-chip-input" data-add-chip="${sec.id}" placeholder="+ add, Enter">`:""}</div>`;
+  }
+
+  return `
+    <div class="sec-header-row">
+      <div class="section-title" contenteditable="${EDIT_MODE}" data-section-title="${sec.id}">${escapeHtml(sec.title)}</div>
+      ${tools}
+    </div>
+    <div class="glass" style="padding:18px 20px;">${body}</div>`;
+}
+
 function renderHomeHtml(){
-  const skillsChips = HOME.skills.map((s,i) => `<div class="cloud-chip">${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="skills" data-i="${i}">✕</span>`:""}</div>`).join("");
-  const interestChips = HOME.interests.map((s,i) => `<div class="cloud-chip">${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="interests" data-i="${i}">✕</span>`:""}</div>`).join("");
-  const certChips = HOME.certifications.map((s,i) => `<div class="cloud-chip">🏅 ${escapeHtml(s)}${EDIT_MODE?`<span class="x" data-remove="certifications" data-i="${i}">✕</span>`:""}</div>`).join("");
-  const expHtml = HOME.experience.map((x,i) => `
-    <div class="tl-item">
-      <div class="tl-role" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="role">${escapeHtml(x.role)}</div>
-      <div class="tl-company" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="company">${escapeHtml(x.company)}</div>
-      <div class="tl-period" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="period">${escapeHtml(x.period)}</div>
-      <div class="tl-desc" contenteditable="${EDIT_MODE}" data-exp="${i}" data-field="description">${escapeHtml(x.description)}</div>
-      ${EDIT_MODE ? `<button class="btn btn-danger-ghost btn-sm tl-remove" data-remove-exp="${i}">Remove</button>` : ""}
-    </div>`).join("");
+  const avatarHtml = HOME.photo ? `<img src="${HOME.photo}">` : escapeHtml((HOME.name||"??").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase());
+  const contactChips = (HOME.contact||[]).filter(c=>c.url).map(c => `<a class="contact-link-chip" href="${escapeHtml(c.url)}" target="_blank" rel="noopener">${escapeHtml(c.label||"Link")}</a>`).join("");
+  const contactEditRows = EDIT_MODE ? (HOME.contact||[]).map((c,i) => `
+      <div class="contact-row">
+        <input data-contact="${i}" data-cfield="label" placeholder="Label (e.g. Email, LinkedIn)" value="${escapeHtml(c.label||"")}">
+        <input data-contact="${i}" data-cfield="url" placeholder="Link or mailto:you@example.com" value="${escapeHtml(c.url||"")}">
+        <button class="sec-tool-btn danger" data-remove-contact="${i}">🗑</button>
+      </div>`).join("") : "";
+
+  const stats = `<div class="stats-strip">
+      <div class="stat-pill"><b>${ENTRIES.length}</b> entries logged</div>
+      <div class="stat-pill"><b>${TOPICS.length}</b> topics tracked</div>
+      <div class="stat-pill"><b>${MODULES.length}</b> module${MODULES.length===1?'':'s'}</div>
+    </div>`;
 
   return `
     <div class="glass-strong" style="padding:28px;">
-      <h1 class="hero-name" contenteditable="${EDIT_MODE}" data-home="name">${escapeHtml(HOME.name)}</h1>
-      <div class="hero-headline" contenteditable="${EDIT_MODE}" data-home="headline">${escapeHtml(HOME.headline)}</div>
-      <div class="hero-about" contenteditable="${EDIT_MODE}" data-home="about">${escapeHtml(HOME.about)}</div>
-      ${EDIT_MODE ? `<div class="edit-hint">Click any text above to edit it directly. Changes save automatically.</div>` : ""}
+      <div class="hero-top-row">
+        <div>
+          <div class="avatar-lg ${EDIT_MODE?'editable':''}" id="avatarClick" style="${EDIT_MODE?'cursor:pointer;':''}">${avatarHtml}</div>
+          ${EDIT_MODE ? `<div class="avatar-controls">
+              <button class="btn btn-ghost btn-sm" id="changePhotoBtn">Change photo</button>
+              ${HOME.photo ? `<button class="btn btn-danger-ghost btn-sm" id="removePhotoBtn">Remove</button>` : ""}
+            </div>` : ""}
+          <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+        </div>
+        <div style="flex:1;min-width:0;">
+          <h1 class="hero-name" contenteditable="${EDIT_MODE}" data-home="name">${escapeHtml(HOME.name)}</h1>
+          <div class="hero-headline" contenteditable="${EDIT_MODE}" data-home="headline">${escapeHtml(HOME.headline)}</div>
+          <div class="hero-about" contenteditable="${EDIT_MODE}" data-home="about">${escapeHtml(HOME.about)}</div>
+        </div>
+      </div>
+      ${contactChips ? `<div class="chip-cloud" style="margin-top:16px;">${contactChips}</div>` : ""}
+      ${stats}
+      ${EDIT_MODE ? `<div class="edit-hint">Click any text to edit it directly. Changes save automatically.</div>` : ""}
     </div>
 
-    <div class="section-title">Experience</div>
-    <div class="glass" style="padding:20px 22px;">
-      <div class="timeline">${expHtml || '<div style="color:var(--ink-faint);font-size:13px;">No experience added yet.</div>'}</div>
-      ${EDIT_MODE ? `<button class="btn btn-ghost btn-sm" id="addExpBtn" style="margin-top:8px;">+ Add experience</button>` : ""}
-    </div>
-
-    <div class="section-title">Skills</div>
+    ${EDIT_MODE ? `
+    <div class="section-title">Contact links</div>
     <div class="glass" style="padding:18px 20px;">
-      <div class="chip-cloud">${skillsChips}${EDIT_MODE?`<input class="add-chip-input" id="addSkillInput" placeholder="+ add skill, Enter">`:""}</div>
-    </div>
+      ${contactEditRows || '<div style="color:var(--ink-faint);font-size:13px;">No contact links yet.</div>'}
+      <button class="btn btn-ghost btn-sm" id="addContactBtn" style="margin-top:8px;">+ Add contact link</button>
+    </div>` : ""}
 
-    <div class="section-title">Certifications</div>
-    <div class="glass" style="padding:18px 20px;">
-      <div class="chip-cloud">${certChips}${EDIT_MODE?`<input class="add-chip-input" id="addCertInput" placeholder="+ add cert, Enter">`:""}</div>
-    </div>
+    ${HOME.sections.map((sec,i) => renderSectionHtml(sec,i)).join("")}
 
-    <div class="section-title">Interests</div>
-    <div class="glass" style="padding:18px 20px;">
-      <div class="chip-cloud">${interestChips}${EDIT_MODE?`<input class="add-chip-input" id="addInterestInput" placeholder="+ add interest, Enter">`:""}</div>
-    </div>
+    ${EDIT_MODE ? `<div class="add-section-bar">
+      <button class="btn btn-ghost" id="addSectionBtn">+ Add section</button>
+    </div>` : ""}
   `;
 }
 
 function wireHomeEvents(){
   document.querySelectorAll("[data-home]").forEach(el => {
-    el.addEventListener("blur", async () => { HOME[el.dataset.home] = el.textContent.trim(); await safeSet("sd-home", JSON.stringify(HOME)); document.getElementById("sbName").textContent = HOME.name; toast("Saved"); });
+    el.addEventListener("blur", async () => { HOME[el.dataset.home] = el.textContent.trim(); await safeSet("sd-home", JSON.stringify(HOME)); renderSidebarBrand(); toast("Saved"); });
   });
-  document.querySelectorAll("[data-exp]").forEach(el => {
-    el.addEventListener("blur", async () => { HOME.experience[el.dataset.exp][el.dataset.field] = el.textContent.trim(); await safeSet("sd-home", JSON.stringify(HOME)); toast("Saved"); });
+  document.querySelectorAll("[data-section-title]").forEach(el => {
+    el.addEventListener("blur", async () => {
+      const sec = HOME.sections.find(s=>s.id===el.dataset.sectionTitle);
+      if(sec){ sec.title = el.textContent.trim() || "Untitled section"; await safeSet("sd-home", JSON.stringify(HOME)); toast("Saved"); }
+    });
   });
-  document.querySelectorAll("[data-remove-exp]").forEach(btn => {
-    btn.addEventListener("click", async () => { HOME.experience.splice(btn.dataset.removeExp,1); await safeSet("sd-home", JSON.stringify(HOME)); renderMain(); });
+  document.querySelectorAll("[data-sec][data-item]").forEach(el => {
+    el.addEventListener("blur", async () => {
+      const sec = HOME.sections.find(s=>s.id===el.dataset.sec);
+      if(!sec) return;
+      const item = sec.items[el.dataset.item];
+      if(!item) return;
+      item[el.dataset.field] = el.textContent.trim();
+      await safeSet("sd-home", JSON.stringify(HOME));
+      toast("Saved");
+    });
   });
-  const addExpBtn = document.getElementById("addExpBtn");
-  if(addExpBtn) addExpBtn.addEventListener("click", async () => {
-    HOME.experience.push({role:"Role", company:"Company", period:"Period", description:"Description"});
-    await safeSet("sd-home", JSON.stringify(HOME));
-    renderMain();
-  });
-  document.querySelectorAll("[data-remove]").forEach(el => {
-    el.addEventListener("click", async () => {
-      const arr = el.dataset.remove;
-      HOME[arr].splice(el.dataset.i,1);
+  document.querySelectorAll("[data-remove-item]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const sec = HOME.sections.find(s=>s.id===btn.dataset.removeItem);
+      if(!sec) return;
+      sec.items.splice(btn.dataset.itemI,1);
       await safeSet("sd-home", JSON.stringify(HOME));
       renderMain();
     });
   });
-  wireChipInput("addSkillInput","skills");
-  wireChipInput("addCertInput","certifications");
-  wireChipInput("addInterestInput","interests");
-}
-function wireChipInput(inputId, field){
-  const el = document.getElementById(inputId);
-  if(!el) return;
-  el.addEventListener("keydown", async (ev) => {
-    if(ev.key==="Enter" && el.value.trim()){
-      HOME[field].push(el.value.trim());
+  document.querySelectorAll("[data-add-timeline-item]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const sec = HOME.sections.find(s=>s.id===btn.dataset.addTimelineItem);
+      sec.items.push({role:"Role", company:"Company", period:"Period", description:"Description"});
       await safeSet("sd-home", JSON.stringify(HOME));
       renderMain();
-    }
+    });
   });
+  document.querySelectorAll("[data-add-chip]").forEach(el => {
+    el.addEventListener("keydown", async (ev) => {
+      if(ev.key==="Enter" && el.value.trim()){
+        const sec = HOME.sections.find(s=>s.id===el.dataset.addChip);
+        sec.items.push(sec.showRating ? {name:el.value.trim(), rating:3} : {name:el.value.trim()});
+        await safeSet("sd-home", JSON.stringify(HOME));
+        renderMain();
+      }
+    });
+  });
+  document.querySelectorAll("[data-star-sec]").forEach(el => {
+    el.addEventListener("click", async () => {
+      const sec = HOME.sections.find(s=>s.id===el.dataset.starSec);
+      const item = sec.items[el.dataset.starItem];
+      item.rating = parseInt(el.dataset.starVal);
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    });
+  });
+  document.querySelectorAll("[data-toggle-rating]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const sec = HOME.sections.find(s=>s.id===btn.dataset.toggleRating);
+      sec.showRating = !sec.showRating;
+      if(sec.showRating) sec.items.forEach(it => { if(it.rating===undefined) it.rating = 3; });
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    });
+  });
+  document.querySelectorAll("[data-delete-section]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if(!confirm("Delete this section and everything in it?")) return;
+      HOME.sections = HOME.sections.filter(s => s.id!==btn.dataset.deleteSection);
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    });
+  });
+  const addSectionBtn = document.getElementById("addSectionBtn");
+  if(addSectionBtn) addSectionBtn.addEventListener("click", openAddSectionModal);
+
+  /* contact links */
+  document.querySelectorAll("[data-contact]").forEach(el => {
+    el.addEventListener("blur", async () => {
+      HOME.contact[el.dataset.contact][el.dataset.cfield] = el.value.trim();
+      await safeSet("sd-home", JSON.stringify(HOME));
+    });
+  });
+  document.querySelectorAll("[data-remove-contact]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      HOME.contact.splice(btn.dataset.removeContact,1);
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderMain();
+    });
+  });
+  const addContactBtn = document.getElementById("addContactBtn");
+  if(addContactBtn) addContactBtn.addEventListener("click", async () => {
+    HOME.contact.push({label:"", url:""});
+    await safeSet("sd-home", JSON.stringify(HOME));
+    renderMain();
+  });
+
+  /* avatar */
+  const avatarInput = document.getElementById("avatarInput");
+  const triggerAvatar = () => avatarInput && avatarInput.click();
+  const avatarClick = document.getElementById("avatarClick");
+  if(avatarClick && EDIT_MODE) avatarClick.addEventListener("click", triggerAvatar);
+  const changePhotoBtn = document.getElementById("changePhotoBtn");
+  if(changePhotoBtn) changePhotoBtn.addEventListener("click", triggerAvatar);
+  const removePhotoBtn = document.getElementById("removePhotoBtn");
+  if(removePhotoBtn) removePhotoBtn.addEventListener("click", async () => {
+    HOME.photo = null;
+    await safeSet("sd-home", JSON.stringify(HOME));
+    renderSidebarBrand();
+    renderMain();
+  });
+  if(avatarInput) avatarInput.addEventListener("change", handleAvatarSelect);
+}
+
+function handleAvatarSelect(ev){
+  const file = ev.target.files && ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e2) => {
+    const img = new Image();
+    img.onload = async () => {
+      const maxDim = 300;
+      let w = img.width, h = img.height;
+      if(w>maxDim || h>maxDim){ const scale = maxDim/Math.max(w,h); w*=scale; h*=scale; }
+      const canvas = document.createElement("canvas"); canvas.width=w; canvas.height=h;
+      const ctx = canvas.getContext("2d"); ctx.drawImage(img,0,0,w,h);
+      HOME.photo = canvas.toDataURL("image/jpeg",0.85);
+      await safeSet("sd-home", JSON.stringify(HOME));
+      renderSidebarBrand();
+      renderMain();
+      toast("Photo updated");
+    };
+    img.src = e2.target.result;
+  };
+  reader.readAsDataURL(file);
+  ev.target.value = "";
+}
+
+function openAddSectionModal(){
+  showModal(`
+    <div class="modal-head"><h2>Add section</h2><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="field"><label>Section title</label><input type="text" id="newSecTitle" placeholder="e.g. Tools I use"></div>
+    <div class="field"><label>Type</label>
+      <select id="newSecType">
+        <option value="chips">Tag / skill list</option>
+        <option value="timeline">Timeline (experience-style)</option>
+      </select>
+    </div>
+    <div class="field" id="ratingFieldWrap">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;text-transform:none;letter-spacing:0;">
+        <input type="checkbox" id="newSecRating" style="width:auto;"> Enable 5-star ratings for items in this section
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="createSecBtn">Create section</button>
+    </div>
+  `);
+  const typeSel = document.getElementById("newSecType");
+  const ratingWrap = document.getElementById("ratingFieldWrap");
+  typeSel.addEventListener("change", () => { ratingWrap.style.display = typeSel.value==="chips" ? "block" : "none"; });
+  document.getElementById("createSecBtn").addEventListener("click", async () => {
+    const title = document.getElementById("newSecTitle").value.trim() || "New section";
+    const type = typeSel.value;
+    const showRating = type==="chips" && document.getElementById("newSecRating").checked;
+    HOME.sections.push({id:"sec"+Date.now(), title, type, showRating, items:[]});
+    await safeSet("sd-home", JSON.stringify(HOME));
+    closeModal();
+    renderMain();
+  });
+}
+
+function renderSidebarBrand(){
+  const el = document.getElementById("sidebarBrand");
+  const avatarHtml = HOME.photo ? `<img src="${HOME.photo}">` : escapeHtml((HOME.name||"??").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase());
+  el.innerHTML = `
+    <div class="dot">${avatarHtml}</div>
+    <div style="min-width:0;">
+      <div class="who" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(HOME.name)}</div>
+      <div class="sub">SAP Learning Log</div>
+    </div>`;
 }
 
 /* ---------------- TOPIC / MODULE VIEW ---------------- */
@@ -1090,8 +1342,7 @@ if(!EDIT_MODE) document.getElementById("backupBtn").style.display = "none";
 
 (async function init(){
   await loadAll();
-  document.getElementById("sbName").textContent = HOME.name;
-  document.getElementById("sbInitials").textContent = (HOME.name||"?? ").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+  renderSidebarBrand();
   renderSidebar();
   renderMain();
   document.getElementById("loadingVeil").style.display = "none";
