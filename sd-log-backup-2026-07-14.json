@@ -1,0 +1,171 @@
+{
+  "exportedAt": "2026-07-14T16:30:59.889Z",
+  "home": {
+    "name": "Shaik Zaheer Abbas",
+    "headline": "SAP SD Functional Consultant",
+    "about": "SAP SD Functional Consultant with around 1.5 years of hands-on experience on a live production support project (Cutera Inc., US), running RISE with SAP S/4HANA 2020 and 2023. Currently deepening expertise toward a senior functional consultant level across SD, MM, FI, and cross-module integration areas, and preparing for the SAP SD certification exam C_TS462_2023.",
+    "sections": [
+      {
+        "id": "experience",
+        "title": "Experience",
+        "type": "timeline",
+        "items": [
+          {
+            "role": "SAP SD Functional Consultant",
+            "company": "Cutera Inc. — Production Support (RISE with SAP S/4HANA)",
+            "period": "~1.5 years",
+            "description": "Order-to-cash support, pricing procedure configuration, billing, credit management, shipping & ATP, and SD-FI / SD-MM cross-module integration on a live S/4HANA 2020 & 2023 landscape."
+          }
+        ]
+      },
+      {
+        "id": "skills",
+        "title": "Skills",
+        "type": "chips",
+        "showRating": true,
+        "items": [
+          {
+            "name": "SAP SD",
+            "rating": 0
+          },
+          {
+            "name": "Pricing Procedures",
+            "rating": 0
+          },
+          {
+            "name": "Credit Management",
+            "rating": 0
+          },
+          {
+            "name": "Shipping & ATP",
+            "rating": 0
+          },
+          {
+            "name": "SD-FI Integration",
+            "rating": 0
+          },
+          {
+            "name": "SD-MM Integration",
+            "rating": 0
+          },
+          {
+            "name": "Fiori Apps",
+            "rating": 0
+          },
+          {
+            "name": "IDoc Monitoring",
+            "rating": 0
+          },
+          {
+            "name": "LSMW / LTMC",
+            "rating": 0
+          }
+        ]
+      },
+      {
+        "id": "certifications",
+        "title": "Certifications",
+        "type": "chips",
+        "showRating": false,
+        "items": [
+          {
+            "name": "Preparing for C_TS462_2023 — SAP S/4HANA Sales"
+          }
+        ]
+      },
+      {
+        "id": "interests",
+        "title": "Interests",
+        "type": "chips",
+        "showRating": false,
+        "items": [
+          {
+            "name": "Audio gear & IEMs"
+          },
+          {
+            "name": "Technical writing & LinkedIn knowledge-sharing"
+          },
+          {
+            "name": "etc"
+          },
+          {
+            "name": "etc1"
+          }
+        ]
+      }
+    ],
+    "photo": null,
+    "contact": [
+      {
+        "label": "Phone No",
+        "url": "+919515714384"
+      },
+      {
+        "label": "Email",
+        "url": "shaikzaheerabbas800@gmail.com"
+      },
+      {
+        "label": "Linkedin",
+        "url": "https://www.linkedin.com/in/shaik-zaheer-abbas-9b2261298/"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "id": "sapsd",
+      "name": "SAP SD"
+    }
+  ],
+  "topics": [
+    {
+      "id": "p1",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Enterprise Structure",
+      "color": "#4A6CF7"
+    },
+    {
+      "id": "p2",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Master Data",
+      "color": "#A25BF0"
+    },
+    {
+      "id": "p3",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Sales Process",
+      "color": "#FF6FA5"
+    },
+    {
+      "id": "p4",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Pricing",
+      "color": "#E0A62A"
+    },
+    {
+      "id": "p5",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Delivery & Billing",
+      "color": "#22C1A0"
+    },
+    {
+      "id": "p6",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Advanced Topics",
+      "color": "#3E7A9E"
+    },
+    {
+      "id": "p7",
+      "moduleId": "sapsd",
+      "parentId": null,
+      "name": "Consultant Deliverables",
+      "color": "#7A6FF0"
+    }
+  ],
+  "entries": []
+}
